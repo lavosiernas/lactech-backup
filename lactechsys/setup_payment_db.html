@@ -1,0 +1,411 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuração do Banco de Pagamentos - LacTech</title>
+    <script src="https://unpkg.com/@supabase/supabase-js@2"></script>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 800px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 15px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(135deg, #2c3e50 0%, #3498db 100%);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            opacity: 0.9;
+            font-size: 1.1rem;
+        }
+        
+        .content {
+            padding: 30px;
+        }
+        
+        .step {
+            background: #f8f9fa;
+            border-radius: 10px;
+            padding: 20px;
+            margin-bottom: 20px;
+            border-left: 4px solid #3498db;
+        }
+        
+        .step h3 {
+            color: #2c3e50;
+            margin-bottom: 15px;
+            display: flex;
+            align-items: center;
+        }
+        
+        .step-number {
+            background: #3498db;
+            color: white;
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 15px;
+            font-weight: bold;
+        }
+        
+        .btn {
+            background: linear-gradient(135deg, #3498db 0%, #2980b9 100%);
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s ease;
+            margin: 10px 5px;
+        }
+        
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 10px 20px rgba(52, 152, 219, 0.3);
+        }
+        
+        .btn-success {
+            background: linear-gradient(135deg, #27ae60 0%, #229954 100%);
+        }
+        
+        .btn-danger {
+            background: linear-gradient(135deg, #e74c3c 0%, #c0392b 100%);
+        }
+        
+        .log-container {
+            background: #2c3e50;
+            color: #ecf0f1;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            max-height: 400px;
+            overflow-y: auto;
+            margin-top: 20px;
+        }
+        
+        .log-entry {
+            margin-bottom: 5px;
+            padding: 5px;
+            border-radius: 3px;
+        }
+        
+        .log-success {
+            background: rgba(39, 174, 96, 0.2);
+        }
+        
+        .log-error {
+            background: rgba(231, 76, 60, 0.2);
+        }
+        
+        .log-info {
+            background: rgba(52, 152, 219, 0.2);
+        }
+        
+        .sql-container {
+            background: #34495e;
+            color: #ecf0f1;
+            border-radius: 8px;
+            padding: 20px;
+            font-family: 'Courier New', monospace;
+            font-size: 0.9rem;
+            margin-top: 20px;
+            max-height: 500px;
+            overflow-y: auto;
+        }
+        
+        .copy-btn {
+            position: relative;
+            float: right;
+            margin-bottom: 10px;
+        }
+        
+        .status {
+            display: inline-block;
+            padding: 5px 10px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 600;
+        }
+        
+        .status-pending {
+            background: #f39c12;
+            color: white;
+        }
+        
+        .status-success {
+            background: #27ae60;
+            color: white;
+        }
+        
+        .status-error {
+            background: #e74c3c;
+            color: white;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🔧 Configuração do Banco</h1>
+            <p>Sistema de Pagamentos - LacTech</p>
+        </div>
+        
+        <div class="content">
+            <!-- Etapa 1: Teste de Conexão -->
+            <div class="step">
+                <h3>
+                    <span class="step-number">1</span>
+                    Teste de Conexão
+                </h3>
+                <p>Verificar se a conexão com o Supabase está funcionando.</p>
+                <div style="margin-top: 15px;">
+                    <button class="btn" onclick="testConnection()">🔍 Testar Conexão</button>
+                    <span id="connection-status" class="status status-pending">Pendente</span>
+                </div>
+            </div>
+            
+            <!-- Etapa 2: Gerar SQL -->
+            <div class="step">
+                <h3>
+                    <span class="step-number">2</span>
+                    Gerar SQL das Tabelas
+                </h3>
+                <p>Preparar o código SQL para criar as tabelas no Supabase.</p>
+                <div style="margin-top: 15px;">
+                    <button class="btn" onclick="generateSQL()">📝 Gerar SQL</button>
+                    <span id="sql-status" class="status status-pending">Pendente</span>
+                </div>
+            </div>
+            
+            <!-- Etapa 3: Verificar Tabelas -->
+            <div class="step">
+                <h3>
+                    <span class="step-number">3</span>
+                    Verificar Tabelas Existentes
+                </h3>
+                <p>Listar todas as tabelas no banco de dados de pagamentos.</p>
+                <div style="margin-top: 15px;">
+                    <button class="btn" onclick="checkTables()">📊 Verificar Tabelas</button>
+                    <span id="tables-status" class="status status-pending">Pendente</span>
+                </div>
+            </div>
+            
+            <!-- Log de Atividades -->
+            <div class="step">
+                <h3>
+                    <span class="step-number">📋</span>
+                    Log de Atividades
+                </h3>
+                <div id="log-container" class="log-container">
+                    <div class="log-entry log-info">🚀 Sistema inicializado. Aguardando comandos...</div>
+                </div>
+            </div>
+            
+            <!-- Container para SQL -->
+            <div id="sql-output" style="display: none;">
+                <h3>📄 SQL para Executar no Supabase</h3>
+                <button class="copy-btn btn btn-success" onclick="copySQL()">📋 Copiar SQL</button>
+                <div class="sql-container" id="sql-content"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Scripts -->
+    <script src="payment_supabase_config.js"></script>
+    <script>
+        // =====================================================
+        // FUNÇÕES DE INTERFACE
+        // =====================================================
+        
+        function log(message, type = 'info') {
+            const logContainer = document.getElementById('log-container');
+            const logEntry = document.createElement('div');
+            logEntry.className = `log-entry log-${type}`;
+            logEntry.innerHTML = `[${new Date().toLocaleTimeString()}] ${message}`;
+            logContainer.appendChild(logEntry);
+            logContainer.scrollTop = logContainer.scrollHeight;
+        }
+        
+        function updateStatus(elementId, status, text = null) {
+            const element = document.getElementById(elementId);
+            element.className = `status status-${status}`;
+            if (text) element.textContent = text;
+        }
+        
+        // =====================================================
+        // FUNÇÕES DE CONFIGURAÇÃO
+        // =====================================================
+        
+        async function testConnection() {
+            log('🔍 Iniciando teste de conexão...', 'info');
+            updateStatus('connection-status', 'pending', 'Testando...');
+            
+            try {
+                const result = await testPaymentConnection();
+                
+                if (result) {
+                    log('✅ Conexão estabelecida com sucesso!', 'success');
+                    updateStatus('connection-status', 'success', 'Conectado');
+                } else {
+                    log('❌ Falha na conexão', 'error');
+                    updateStatus('connection-status', 'error', 'Erro');
+                }
+            } catch (error) {
+                log(`❌ Erro no teste: ${error.message}`, 'error');
+                updateStatus('connection-status', 'error', 'Erro');
+            }
+        }
+        
+        async function generateSQL() {
+            log('📝 Gerando SQL das tabelas...', 'info');
+            updateStatus('sql-status', 'pending', 'Gerando...');
+            
+            try {
+                const result = await setupPaymentDatabase();
+                
+                if (result.success) {
+                    log('✅ SQL gerado com sucesso!', 'success');
+                    updateStatus('sql-status', 'success', 'Gerado');
+                    
+                    // Mostrar SQL
+                    document.getElementById('sql-output').style.display = 'block';
+                    document.getElementById('sql-content').textContent = result.sql;
+                    
+                    // Adicionar SQL de segurança
+                    const securitySQL = await setupPaymentSecurity();
+                    document.getElementById('sql-content').textContent += '\n\n-- Configurações de Segurança\n' + securitySQL;
+                    
+                    log('📋 SQL completo disponível para cópia', 'info');
+                } else {
+                    log(`❌ Erro ao gerar SQL: ${result.error}`, 'error');
+                    updateStatus('sql-status', 'error', 'Erro');
+                }
+            } catch (error) {
+                log(`❌ Erro: ${error.message}`, 'error');
+                updateStatus('sql-status', 'error', 'Erro');
+            }
+        }
+        
+        async function checkTables() {
+            log('📊 Verificando tabelas existentes...', 'info');
+            updateStatus('tables-status', 'pending', 'Verificando...');
+            
+            try {
+                // Tentar listar tabelas usando uma query simples
+                const { data, error } = await paymentSupabase
+                    .from('pix_payments')
+                    .select('id')
+                    .limit(1);
+                
+                if (error) {
+                    if (error.code === 'PGRST116') {
+                        log('⚠️ Tabela pix_payments não encontrada', 'error');
+                        log('💡 Execute o SQL gerado na etapa 2 no Supabase SQL Editor', 'info');
+                        updateStatus('tables-status', 'error', 'Não encontradas');
+                    } else {
+                        log(`❌ Erro ao verificar tabelas: ${error.message}`, 'error');
+                        updateStatus('tables-status', 'error', 'Erro');
+                    }
+                } else {
+                    log('✅ Tabela pix_payments encontrada!', 'success');
+                    
+                    // Verificar outras tabelas
+                    const tables = ['card_payments', 'subscriptions'];
+                    let allTablesExist = true;
+                    
+                    for (const table of tables) {
+                        try {
+                            const { error: tableError } = await paymentSupabase
+                                .from(table)
+                                .select('id')
+                                .limit(1);
+                            
+                            if (tableError && tableError.code === 'PGRST116') {
+                                log(`⚠️ Tabela ${table} não encontrada`, 'error');
+                                allTablesExist = false;
+                            } else {
+                                log(`✅ Tabela ${table} encontrada!`, 'success');
+                            }
+                        } catch (err) {
+                            log(`❌ Erro ao verificar ${table}: ${err.message}`, 'error');
+                            allTablesExist = false;
+                        }
+                    }
+                    
+                    if (allTablesExist) {
+                        log('🎉 Todas as tabelas estão configuradas!', 'success');
+                        updateStatus('tables-status', 'success', 'Configuradas');
+                    } else {
+                        log('⚠️ Algumas tabelas estão faltando', 'error');
+                        updateStatus('tables-status', 'error', 'Incompleto');
+                    }
+                }
+            } catch (error) {
+                log(`❌ Erro na verificação: ${error.message}`, 'error');
+                updateStatus('tables-status', 'error', 'Erro');
+            }
+        }
+        
+        function copySQL() {
+            const sqlContent = document.getElementById('sql-content').textContent;
+            navigator.clipboard.writeText(sqlContent).then(() => {
+                log('📋 SQL copiado para a área de transferência!', 'success');
+                
+                // Feedback visual
+                const btn = event.target;
+                const originalText = btn.textContent;
+                btn.textContent = '✅ Copiado!';
+                btn.style.background = '#27ae60';
+                
+                setTimeout(() => {
+                    btn.textContent = originalText;
+                    btn.style.background = '';
+                }, 2000);
+            }).catch((err) => {
+                log('❌ Erro ao copiar: ' + err.message, 'error');
+            });
+        }
+        
+        // =====================================================
+        // INSTRUÇÕES AUTOMÁTICAS
+        // =====================================================
+        
+        window.addEventListener('load', () => {
+            log('🚀 Sistema de configuração carregado', 'success');
+            log('📋 Siga as etapas na ordem para configurar o banco', 'info');
+            log('💡 Dica: Execute o SQL gerado no Supabase SQL Editor', 'info');
+        });
+    </script>
+</body>
+</html>

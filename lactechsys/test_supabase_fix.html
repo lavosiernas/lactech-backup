@@ -1,0 +1,93 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Teste - Correção Supabase</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase_config_fixed.js"></script>
+    <script>
+        // Aguardar configuração do Supabase antes de carregar fix_data_sync_complete.js
+        document.addEventListener('DOMContentLoaded', function() {
+            setTimeout(function() {
+                const script = document.createElement('script');
+                script.src = 'fix_data_sync_complete.js';
+                document.head.appendChild(script);
+            }, 1000);
+        });
+    </script>
+</head>
+<body>
+    <h1>Teste de Correção do Supabase</h1>
+    <div id="status">Carregando...</div>
+    <div id="logs"></div>
+
+    <script>
+        const statusDiv = document.getElementById('status');
+        const logsDiv = document.getElementById('logs');
+        
+        function addLog(message) {
+            const p = document.createElement('p');
+            p.textContent = `${new Date().toLocaleTimeString()}: ${message}`;
+            logsDiv.appendChild(p);
+            console.log(message);
+        }
+        
+        // Aguardar um pouco para garantir que tudo foi carregado
+        setTimeout(async () => {
+            try {
+                addLog('Verificando se Supabase está disponível...');
+                
+                if (typeof window.supabase === 'undefined') {
+                    statusDiv.innerHTML = '<span style="color: red;">❌ ERRO: window.supabase não está definido</span>';
+                    addLog('ERRO: window.supabase não está definido');
+                    return;
+                }
+                
+                if (typeof window.supabase.createClient === 'undefined') {
+                    statusDiv.innerHTML = '<span style="color: red;">❌ ERRO: window.supabase.createClient não está disponível</span>';
+                    addLog('ERRO: window.supabase.createClient não está disponível');
+                    return;
+                }
+                
+                addLog('Supabase está disponível!');
+                
+                // Testar se o cliente foi inicializado
+                if (window.supabase.auth) {
+                    addLog('Cliente Supabase inicializado com sucesso!');
+                    statusDiv.innerHTML = '<span style="color: green;">✅ SUCESSO: Cliente Supabase configurado corretamente</span>';
+                    
+                    // Testar uma operação simples
+                    try {
+                        const { data: { user } } = await window.supabase.auth.getUser();
+                        addLog('Teste de autenticação executado com sucesso');
+                    } catch (error) {
+                        addLog(`Erro no teste de autenticação: ${error.message}`);
+                    }
+                } else {
+                    statusDiv.innerHTML = '<span style="color: orange;">⚠️ AVISO: Cliente Supabase não tem auth disponível</span>';
+                    addLog('AVISO: Cliente Supabase não tem auth disponível');
+                }
+                
+                // Testar se LacTechAPI está disponível
+                if (typeof window.LacTechAPI !== 'undefined') {
+                    addLog('LacTechAPI está disponível!');
+                } else {
+                    addLog('AVISO: LacTechAPI não está disponível');
+                }
+                
+                // Testar se DataSyncFix está disponível
+                if (typeof window.DataSyncFix !== 'undefined') {
+                    addLog('DataSyncFix está disponível!');
+                } else {
+                    addLog('AVISO: DataSyncFix não está disponível');
+                }
+                
+            } catch (error) {
+                statusDiv.innerHTML = `<span style="color: red;">❌ ERRO: ${error.message}</span>`;
+                addLog(`ERRO: ${error.message}`);
+            }
+        }, 2000); // Aguardar 2 segundos
+    </script>
+</body>
+</html>

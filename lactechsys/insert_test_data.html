@@ -1,0 +1,255 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Inserir Dados de Teste - LacTech</title>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="supabase_config_fixed.js"></script>
+    <script src="auth_fix.js"></script>
+    <style>
+        body { font-family: Arial, sans-serif; margin: 20px; }
+        .section { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { background-color: #d4edda; border-color: #c3e6cb; }
+        .error { background-color: #f8d7da; border-color: #f5c6cb; }
+        .info { background-color: #d1ecf1; border-color: #bee5eb; }
+        button { padding: 10px 20px; margin: 5px; border: none; border-radius: 5px; cursor: pointer; }
+        .btn-primary { background-color: #007bff; color: white; }
+        .btn-success { background-color: #28a745; color: white; }
+        .btn-danger { background-color: #dc3545; color: white; }
+        pre { background-color: #f8f9fa; padding: 10px; border-radius: 3px; overflow-x: auto; }
+    </style>
+</head>
+<body>
+    <h1>Inserir Dados de Teste - LacTech</h1>
+    
+    <div class="section info">
+        <h3>⚠️ ATENÇÃO</h3>
+        <p>Este script irá inserir dados de teste no banco de dados. Use apenas em ambiente de desenvolvimento.</p>
+        <p>Certifique-se de estar logado como um usuário válido antes de executar.</p>
+    </div>
+
+    <div class="section">
+        <h3>Status da Autenticação</h3>
+        <div id="auth-status">Verificando...</div>
+        <div id="user-info"></div>
+    </div>
+
+    <div class="section">
+        <h3>Ações</h3>
+        <button class="btn-primary" onclick="checkAuth()">Verificar Autenticação</button>
+        <button class="btn-success" onclick="insertTestData()">Inserir Dados de Teste</button>
+        <button class="btn-danger" onclick="clearTestData()">Limpar Dados de Teste</button>
+    </div>
+
+    <div id="results"></div>
+
+    <script>
+        const results = document.getElementById('results');
+        const authStatus = document.getElementById('auth-status');
+        const userInfo = document.getElementById('user-info');
+        
+        let currentUser = null;
+        let currentFarmId = null;
+
+        function addResult(title, content, type = 'info') {
+            const div = document.createElement('div');
+            div.className = `section ${type}`;
+            div.innerHTML = `
+                <h3>${title}</h3>
+                <div>${content}</div>
+            `;
+            results.appendChild(div);
+        }
+
+        async function checkAuth() {
+            try {
+                authStatus.innerHTML = 'Verificando autenticação...';
+                
+                const authResult = await window.authFix.checkAuthenticationFixed();
+                
+                if (authResult) {
+                    authStatus.innerHTML = '<span style="color: green;">✅ Autenticado</span>';
+                    
+                    // Buscar dados do usuário
+                    const { data: { user }, error: userError } = await supabase.auth.getUser();
+                    
+                    if (userError) {
+                        userInfo.innerHTML = `<span style="color: red;">Erro: ${userError.message}</span>`;
+                        return;
+                    }
+                    
+                    currentUser = user;
+                    
+                    // Buscar dados na tabela users
+                    const { data: userData, error: userTableError } = await supabase
+                        .from('users')
+                        .select('*')
+                        .eq('id', user.id)
+                        .single();
+                    
+                    if (userTableError) {
+                        userInfo.innerHTML = `<span style="color: red;">Erro na tabela users: ${userTableError.message}</span>`;
+                        return;
+                    }
+                    
+                    currentFarmId = userData.farm_id;
+                    
+                    userInfo.innerHTML = `
+                        <strong>Usuário:</strong> ${userData.name} (${user.email})<br>
+                        <strong>Role:</strong> ${userData.role}<br>
+                        <strong>Farm ID:</strong> ${userData.farm_id}<br>
+                        <strong>Ativo:</strong> ${userData.is_active ? 'Sim' : 'Não'}
+                    `;
+                    
+                    addResult('Autenticação', 'Usuário autenticado com sucesso!', 'success');
+                    
+                } else {
+                    authStatus.innerHTML = '<span style="color: red;">❌ Não autenticado</span>';
+                    userInfo.innerHTML = 'Faça login primeiro';
+                    addResult('Autenticação', 'Usuário não autenticado. Faça login primeiro.', 'error');
+                }
+                
+            } catch (error) {
+                authStatus.innerHTML = '<span style="color: red;">❌ Erro na verificação</span>';
+                userInfo.innerHTML = `Erro: ${error.message}`;
+                addResult('Erro', `Erro na verificação: ${error.message}`, 'error');
+            }
+        }
+
+        async function insertTestData() {
+            if (!currentUser || !currentFarmId) {
+                addResult('Erro', 'Usuário não autenticado ou farm_id não encontrado. Verifique a autenticação primeiro.', 'error');
+                return;
+            }
+
+            try {
+                addResult('Inserindo Dados de Teste', 'Iniciando inserção...', 'info');
+
+                // Gerar dados de produção para os últimos 7 dias
+                const today = new Date();
+                const testData = [];
+
+                for (let i = 6; i >= 0; i--) {
+                    const date = new Date(today);
+                    date.setDate(date.getDate() - i);
+                    const dateStr = date.toISOString().split('T')[0];
+                    
+                    // Inserir 2-3 registros por dia (manhã, tarde, noite)
+                    const shifts = ['manha', 'tarde', 'noite'];
+                    const volumes = [45.5, 52.3, 48.7, 51.2, 47.8, 49.1, 53.4];
+                    
+                    for (let j = 0; j < 2; j++) { // 2 registros por dia
+                        const shift = shifts[j];
+                        const volume = volumes[Math.floor(Math.random() * volumes.length)];
+                        const temperature = 3.5 + (Math.random() * 2); // Entre 3.5 e 5.5°C
+                        
+                        testData.push({
+                            farm_id: currentFarmId,
+                            user_id: currentUser.id,
+                            production_date: dateStr,
+                            shift: shift,
+                            volume_liters: volume,
+                            temperature: parseFloat(temperature.toFixed(1)),
+                            observations: `Registro de teste - ${shift}`
+                        });
+                    }
+                }
+
+                // Inserir dados de produção
+                const { data: productionData, error: productionError } = await supabase
+                    .from('milk_production')
+                    .insert(testData)
+                    .select();
+
+                if (productionError) {
+                    addResult('Erro na Inserção', `Erro ao inserir dados de produção: ${productionError.message}`, 'error');
+                    return;
+                }
+
+                addResult('Dados Inseridos', 
+                    `✅ ${productionData.length} registros de produção inseridos com sucesso!<br>
+                     <strong>Período:</strong> Últimos 7 dias<br>
+                     <strong>Registros por dia:</strong> 2 (manhã e tarde)<br>
+                     <strong>Volume médio:</strong> ~50L por registro<br>
+                     <br>
+                     <strong>Dados inseridos:</strong><br>
+                     <pre>${JSON.stringify(productionData, null, 2)}</pre>`, 
+                    'success');
+
+                // Verificar se os dados foram inseridos corretamente
+                const { data: verifyData, error: verifyError } = await supabase
+                    .from('milk_production')
+                    .select('*')
+                    .eq('farm_id', currentFarmId)
+                    .order('production_date', { ascending: false })
+                    .limit(10);
+
+                if (verifyError) {
+                    addResult('Erro na Verificação', `Erro ao verificar dados: ${verifyError.message}`, 'error');
+                } else {
+                    addResult('Verificação', 
+                        `✅ Dados verificados com sucesso!<br>
+                         <strong>Total de registros na fazenda:</strong> ${verifyData.length}<br>
+                         <strong>Últimos registros:</strong><br>
+                         <pre>${JSON.stringify(verifyData, null, 2)}</pre>`, 
+                        'success');
+                }
+
+            } catch (error) {
+                addResult('Erro Geral', `Erro durante inserção: ${error.message}`, 'error');
+                console.error('Erro na inserção:', error);
+            }
+        }
+
+        async function clearTestData() {
+            if (!currentUser || !currentFarmId) {
+                addResult('Erro', 'Usuário não autenticado ou farm_id não encontrado.', 'error');
+                return;
+            }
+
+            if (!confirm('Tem certeza que deseja limpar todos os dados de teste? Esta ação não pode ser desfeita.')) {
+                return;
+            }
+
+            try {
+                addResult('Limpando Dados', 'Iniciando limpeza...', 'info');
+
+                // Contar registros antes da limpeza
+                const { data: beforeData, error: beforeError } = await supabase
+                    .from('milk_production')
+                    .select('id')
+                    .eq('farm_id', currentFarmId);
+
+                if (beforeError) {
+                    addResult('Erro na Contagem', `Erro ao contar registros: ${beforeError.message}`, 'error');
+                    return;
+                }
+
+                // Deletar registros de produção da fazenda
+                const { error: deleteError } = await supabase
+                    .from('milk_production')
+                    .delete()
+                    .eq('farm_id', currentFarmId);
+
+                if (deleteError) {
+                    addResult('Erro na Limpeza', `Erro ao deletar registros: ${deleteError.message}`, 'error');
+                    return;
+                }
+
+                addResult('Dados Limpos', 
+                    `✅ ${beforeData.length} registros de produção foram removidos com sucesso!<br>
+                     <strong>Fazenda:</strong> ${currentFarmId}`, 
+                    'success');
+
+            } catch (error) {
+                addResult('Erro Geral', `Erro durante limpeza: ${error.message}`, 'error');
+                console.error('Erro na limpeza:', error);
+            }
+        }
+
+        // Verificar autenticação automaticamente quando a página carregar
+        document.addEventListener('DOMContentLoaded', checkAuth);
+    </script>
+</body>
+</html> 
