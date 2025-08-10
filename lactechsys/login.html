@@ -4,8 +4,6 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Login - LacTech</title>
-    <!-- Tema: Login segue o tema do sistema; não persiste preferência aqui -->
-    <meta name="color-scheme" content="dark light">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
     <script src="supabase_config_fixed.js"></script>
@@ -333,64 +331,31 @@
                 }
                 
                 console.log('Auth successful, getting user profile...');
-                const authUser = authData.user;
                 
-                // 1) Tenta buscar perfil por id (fonte de verdade)
-                let { data: userData, error: userError } = await supabase
+                // Get user profile from database
+                const { data: userData, error: userError } = await supabase
                     .from('users')
                     .select('*')
-                    .eq('id', authUser.id)
+                    .eq('email', email)
+                    .eq('is_active', true)
                     .single();
                 
-                // 2) Se não achar por id, tenta por email
                 if (userError || !userData) {
-                    ({ data: userData, error: userError } = await supabase
-                        .from('users')
-                        .select('*')
-                        .eq('email', email)
-                        .single());
-                }
-                
-                // 3) Se ainda não existir, cria um registro mínimo para concluir o login
-                if (userError || !userData) {
-                    console.log('User profile not found. Creating minimal profile record...');
-                    const minimalProfile = {
-                        id: authUser.id,
-                        email: authUser.email,
-                        name: (authUser.user_metadata && authUser.user_metadata.name) ? authUser.user_metadata.name : (authUser.email || '').split('@')[0],
-                        role: 'gerente',
-                        is_active: true
-                    };
-                    const { data: insertData, error: insertError } = await supabase
-                        .from('users')
-                        .insert(minimalProfile)
-                        .select()
-                        .single();
-                    if (insertError) {
-                        console.error('Error creating minimal user profile:', insertError);
-                        throw new Error('Usuário não encontrado no sistema. Complete o cadastro primeiro.');
-                    }
-                    userData = insertData;
-                }
-                
-                // Verifica se está ativo
-                if (userData && userData.is_active === false) {
-                    try { await supabase.auth.signOut(); } catch (_) {}
-                    throw new Error('Conta desativada. Contate o administrador.');
+                    console.log('User profile not found in database');
+                    throw new Error('Usuário não encontrado no sistema. Complete o cadastro primeiro.');
                 }
                 
                 console.log('User profile found:', userData);
                 
                 // Get farm information
-                let farmData = null;
-                if (userData && userData.farm_id) {
-                    const { data: farmRow, error: farmError } = await supabase
-                        .from('farms')
-                        .select('*')
-                        .eq('id', userData.farm_id)
-                        .single();
-                    if (!farmError) farmData = farmRow;
-                    else console.warn('Could not fetch farm data:', farmError);
+                const { data: farmData, error: farmError } = await supabase
+                    .from('farms')
+                    .select('*')
+                    .eq('id', userData.farm_id)
+                    .single();
+                
+                if (farmError) {
+                    console.warn('Could not fetch farm data:', farmError);
                 }
                 
                 // Create user session object
@@ -496,8 +461,6 @@
                 // Show specific error messages
                 if (error.message.includes('Invalid login credentials')) {
                     showError('Email ou senha incorretos. Tente novamente.', isDesktop);
-                } else if (error.message.includes('Conta desativada')) {
-                    showError('Seu acesso foi bloqueado pela fazenda. Contate o administrador.', isDesktop);
                 } else if (error.message.includes('Email not confirmed')) {
                     showError('Conta criada recentemente. Tentando acesso direto...', isDesktop);
                     // Try again after a short delay for newly created accounts
