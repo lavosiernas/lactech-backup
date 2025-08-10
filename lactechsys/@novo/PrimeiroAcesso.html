@@ -8,9 +8,10 @@
     <meta name="color-scheme" content="dark light">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase_config_fixed.js"></script>
+
     <link rel="icon" href="https://i.postimg.cc/vmrkgDcB/lactech.png" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/style.css">
     <script>
         tailwind.config = {
             theme: {
@@ -163,17 +164,17 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div class="md:col-span-2">
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Nome da Fazenda *</label>
-                        <input type="text" required name="farm_name" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none" placeholder="Ex: Fazenda São João">
+                        <input type="text" required name="farm_name" class="login-input w-full px-4 py-3 rounded-xl" placeholder="Ex: Fazenda São João">
                     </div>
                     
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Proprietário *</label>
-                        <input type="text" required name="owner_name" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none" placeholder="Nome do proprietário">
+                        <input type="text" required name="owner_name" class="login-input w-full px-4 py-3 rounded-xl" placeholder="Nome do proprietário">
                     </div>
                     
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">CNPJ/CPF</label>
-                        <input type="text" name="document" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none" placeholder="00.000.000/0000-00">
+                        <input type="text" name="document" class="login-input w-full px-4 py-3 rounded-xl" placeholder="00.000.000/0000-00">
                     </div>
                 </div>
 
@@ -181,12 +182,12 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Cidade *</label>
-                        <input type="text" required name="city" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none" placeholder="Nome da cidade">
+                        <input type="text" required name="city" class="login-input w-full px-4 py-3 rounded-xl" placeholder="Nome da cidade">
                     </div>
                     
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Estado *</label>
-                        <select required name="state" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none">
+                        <select required name="state" class="login-input w-full px-4 py-3 rounded-xl">
                             <option value="">Selecione o estado</option>
                             <option value="AC">Acre</option>
                             <option value="AL">Alagoas</option>
@@ -219,41 +220,25 @@
                     </div>
                 </div>
 
-                <!-- Informações do Rebanho -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Número de Animais *</label>
-                        <input type="number" required name="animal_count" min="1" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none" placeholder="Ex: 150">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Produção Diária (L)</label>
-                        <input type="number" name="daily_production" min="0" step="0.01" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none" placeholder="Ex: 1500">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Área Total (hectares)</label>
-                        <input type="number" name="total_area" min="0" step="0.01" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none" placeholder="Ex: 50">
-                    </div>
-                </div>
+
 
                 <!-- Contato -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Telefone *</label>
-                        <input type="tel" required name="phone" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none" placeholder="(00) 00000-0000">
+                        <input type="tel" required name="phone" class="login-input w-full px-4 py-3 rounded-xl" placeholder="(00) 00000-0000">
                     </div>
                     
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
-                        <input type="email" required name="email" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none" placeholder="contato@fazenda.com">
+                        <input type="email" required name="email" class="login-input w-full px-4 py-3 rounded-xl" placeholder="contato@fazenda.com">
                     </div>
                 </div>
 
                 <!-- Endereço -->
                 <div>
                     <label class="block text-sm font-semibold text-gray-700 mb-2">Endereço Completo</label>
-                    <textarea name="address" rows="2" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none" placeholder="Rua, número, bairro..."></textarea>
+                    <textarea name="address" rows="2" class="login-input w-full px-4 py-3 rounded-xl" placeholder="Rua, número, bairro..."></textarea>
                 </div>
 
                 <!-- Botões -->
@@ -284,24 +269,24 @@
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Nome Completo *</label>
-                        <input type="text" required name="admin_name" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none" placeholder="Seu nome completo">
+                        <input type="text" required name="admin_name" class="login-input w-full px-4 py-3 rounded-xl" placeholder="Seu nome completo">
                     </div>
                     
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
-                        <input type="email" required name="admin_email" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none" placeholder="seu@email.com">
+                        <input type="email" required name="admin_email" class="login-input w-full px-4 py-3 rounded-xl" placeholder="seu@email.com">
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">WhatsApp *</label>
-                        <input type="tel" required name="admin_whatsapp" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none" placeholder="(00) 00000-0000">
+                        <input type="tel" required name="admin_whatsapp" class="login-input w-full px-4 py-3 rounded-xl" placeholder="(00) 00000-0000">
                     </div>
                     
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Tipo de Usuário *</label>
-                        <select required name="admin_role" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none">
+                        <select required name="admin_role" class="login-input w-full px-4 py-3 rounded-xl">
                             <option value="">Selecione o tipo</option>
                             <option value="proprietario">Proprietário da Fazenda</option>
                             <option value="gerente">Gerente</option>
@@ -313,8 +298,8 @@
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Senha *</label>
                         <div class="relative">
-                            <input type="password" required name="admin_password" id="adminPassword" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none pr-12" placeholder="Crie uma senha segura" minlength="6">
-                            <button type="button" onclick="toggleAdminPassword()" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                            <input type="password" required name="admin_password" id="adminPassword" class="login-input w-full px-4 py-3 rounded-xl pr-12" placeholder="Crie uma senha segura" minlength="6">
+                            <button type="button" onclick="toggleAdminPassword()" class="password-toggle absolute right-2 top-1/2 transform -translate-y-1/2">
                                 <svg id="adminEyeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -327,8 +312,8 @@
                     <div>
                         <label class="block text-sm font-semibold text-gray-700 mb-2">Confirmar Senha *</label>
                         <div class="relative">
-                            <input type="password" required name="admin_confirm_password" id="adminConfirmPassword" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none pr-12" placeholder="Confirme sua senha" minlength="6">
-                            <button type="button" onclick="toggleAdminConfirmPassword()" class="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-gray-600">
+                            <input type="password" required name="admin_confirm_password" id="adminConfirmPassword" class="login-input w-full px-4 py-3 rounded-xl pr-12" placeholder="Confirme sua senha" minlength="6">
+                            <button type="button" onclick="toggleAdminConfirmPassword()" class="password-toggle absolute right-2 top-1/2 transform -translate-y-1/2">
                                 <svg id="adminConfirmEyeIcon" class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z"></path>
                                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z"></path>
@@ -339,7 +324,7 @@
                 </div>
 
                 <div class="flex items-start">
-                    <input type="checkbox" required class="w-4 h-4 text-forest-600 border-gray-300 rounded focus:ring-forest-500 mt-0.5">
+                    <input type="checkbox" required class="login-checkbox w-4 h-4 rounded mt-0.5">
                     <span class="ml-2 text-sm text-gray-600">
                         Concordo com os <a href="#" class="text-forest-600 hover:text-forest-700 font-medium">Termos de Uso</a> e 
                         <a href="#" class="text-forest-600 hover:text-forest-700 font-medium">Política de Privacidade</a>
@@ -478,8 +463,11 @@
     </main>
 
     <script>
-        // Supabase client is already initialized in supabase_config_fixed.js
-        // Using the global supabase instance from supabase_config_fixed.js
+        // NOVO PROJETO SUPABASE - SEM RPC, APENAS AUTH
+        const supabase = window.supabase.createClient(
+            'https://mauioyodoxmuzqweaasc.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1hdWlveW9kb3htdXpxd2VhYXNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ3NzYyNzksImV4cCI6MjA3MDM1MjI3OX0.m2nZ_5Vbi9aBz1vZ_oA-JHsd_yqD9brJXjnr39k7Ajc'
+        );
 
         let farmData = {};
         let adminData = {};
@@ -589,15 +577,12 @@
                     address: formData.get('address') || null
                 };
                 
-                // Check if farm with same name or CNPJ exists using secure RPC
-                const { data: exists, error } = await supabase
-                    .rpc('check_farm_exists', { p_name: farmData.name, p_cnpj: farmData.cnpj });
-                
-                if (error) throw error;
-                
-                if (exists) {
-                    throw new Error('Já existe uma fazenda com este nome ou CNPJ');
+                // Validação simples sem RPC
+                if (!farmData.name || !farmData.owner_name || !farmData.city || !farmData.state || !farmData.phone || !farmData.email) {
+                    throw new Error('Por favor, preencha todos os campos obrigatórios');
                 }
+                
+                console.log('✅ Fazenda validada:', farmData);
                 showSuccess('Informações da fazenda validadas com sucesso!');
                 goToStep2();
                 
@@ -635,76 +620,43 @@
                     password: password
                 };
                 
-                // Check if user with same email exists using secure RPC
-                const { data: exists, error: userCheckError } = await supabase
-                    .rpc('check_user_exists', { p_email: adminData.email });
-                
-                if (userCheckError) {
-                    throw userCheckError;
+                // Validação simples
+                if (!adminData.name || !adminData.email || !adminData.whatsapp || !adminData.role || !adminData.password) {
+                    throw new Error('Por favor, preencha todos os campos obrigatórios');
                 }
+
+                console.log('👤 Criando conta:', adminData.email);
                 
-                if (exists) {
-                    throw new Error('Já existe um usuário com este email');
-                }
-                
-                // Create user account in Supabase Auth with email confirmation disabled
-                const { data: authUser, error: authError } = await supabase.auth.signUp({
+                // APENAS AUTH - SEM RPCs
+                const { data: authData, error: authError } = await supabase.auth.signUp({
                     email: adminData.email,
                     password: adminData.password,
                     options: {
-                        emailRedirectTo: undefined, // Disable email confirmation
                         data: {
                             name: adminData.name,
-                            role: adminData.role
+                            farm_name: farmData.name,
+                            role: adminData.role,
+                            whatsapp: adminData.whatsapp,
+                            city: farmData.city,
+                            state: farmData.state,
+                            farm_phone: farmData.phone,
+                            farm_email: farmData.email,
+                            farm_cnpj: farmData.cnpj,
+                            farm_address: farmData.address
                         }
                     }
                 });
                 
-                if (authError) throw authError;
+                if (authError) {
+                    if (authError.message.includes('already registered')) {
+                        throw new Error('Este email já está cadastrado. Tente fazer login.');
+                    }
+                    throw authError;
+                }
                 
-                // Create farm using secure RPC
-                const { data: farmId, error: farmError } = await supabase
-                    .rpc('create_initial_farm', {
-                        p_name: farmData.name,
-                        p_owner_name: farmData.owner_name,
-                        p_cnpj: farmData.cnpj || '',
-                        p_city: farmData.city,
-                        p_state: farmData.state,
-                        p_animal_count: farmData.animal_count,
-                        p_daily_production: farmData.daily_production,
-                        p_total_area_hectares: farmData.total_area_hectares,
-                        p_phone: farmData.phone,
-                        p_email: farmData.email,
-                        p_address: farmData.address || ''
-                    });
+                console.log('✅ Conta criada com sucesso!', authData);
                 
-                if (farmError) throw farmError;
-                
-                // Create user record using RPC function
-                const { error: userError } = await supabase
-                    .rpc('create_initial_user', {
-                        p_user_id: authUser.user.id,
-                        p_farm_id: farmId,
-                        p_name: adminData.name,
-                        p_email: adminData.email,
-                        p_role: adminData.role,
-                        p_whatsapp: adminData.whatsapp
-                    });
-                
-                if (userError) throw userError;
-                
-                // Mark farm setup as completed using RPC function
-                const { error: updateError } = await supabase
-                    .rpc('complete_farm_setup', {
-                        p_farm_id: farmId
-                    });
-                
-                if (updateError) throw updateError;
-                
-                // Store farm ID for summary
-                farmData.id = farmId;
-                
-                // Auto-login the user after successful registration
+                // Ir para o passo final
                 try {
                     const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
                         email: adminData.email,
@@ -799,12 +751,22 @@
         }
 
         function updateSummary() {
-            document.getElementById('summaryFarmName').textContent = farmData.name;
-            document.getElementById('summaryOwnerName').textContent = farmData.owner_name;
-            document.getElementById('summaryLocation').textContent = `${farmData.city}, ${farmData.state}`;
-            document.getElementById('summaryAnimals').textContent = `${farmData.animal_count} animais`;
-            document.getElementById('summaryAdminName').textContent = adminData.name;
-            document.getElementById('summaryAdminRole').textContent = adminData.role === 'proprietario' ? 'Proprietário' : 'Gerente';
+            // Summary atualizado com dados simplificados
+            if (document.getElementById('summaryFarmName')) {
+                document.getElementById('summaryFarmName').textContent = farmData.name || 'N/A';
+            }
+            if (document.getElementById('summaryOwnerName')) {
+                document.getElementById('summaryOwnerName').textContent = farmData.owner_name || 'N/A';
+            }
+            if (document.getElementById('summaryLocation')) {
+                document.getElementById('summaryLocation').textContent = `${farmData.city || ''}, ${farmData.state || ''}`;
+            }
+            if (document.getElementById('summaryAdminName')) {
+                document.getElementById('summaryAdminName').textContent = adminData.name || 'N/A';
+            }
+            if (document.getElementById('summaryAdminRole')) {
+                document.getElementById('summaryAdminRole').textContent = adminData.role === 'proprietario' ? 'Proprietário' : 'Gerente';
+            }
         }
 
         function goBack() {

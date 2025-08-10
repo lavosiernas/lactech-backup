@@ -3,9 +3,9 @@
 // Sistema de Gestão de Fazendas Leiteiras
 // =====================================================
 
-// Credenciais do Supabase
-const SUPABASE_URL = 'https://nsmlbgqebwnqmyajczmd.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5zbWxiZ3FlYnducW15YWpjem1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyMjgwMjgsImV4cCI6MjA2OTgwNDAyOH0.gLt4sTWqJ79g6mEtSiJ0xhzYXf_csvvw_E5vO4O-ZPI';
+// Credenciais do Supabase (recredenciado para o mesmo projeto de payments)
+const SUPABASE_URL = 'https://rvvydklrtcabdwixkjiz.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2dnlka2xydGNhYmR3aXhraml6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1Mjk5NzksImV4cCI6MjA3MDEwNTk3OX0.dWm2zfFXdHAxiTP-iKbck-1hwDSoiCNK42R6lQxxxRQ';
 
 // Aguardar carregamento da biblioteca Supabase e inicializar cliente
 let supabase;

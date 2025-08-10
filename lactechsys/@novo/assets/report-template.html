@@ -1,0 +1,251 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Relatório - Sistema Leiteiro</title>
+    <style>
+        @page {
+            size: A4;
+            margin: 1cm;
+        }
+        
+        body {
+            font-family: 'Arial', sans-serif;
+            margin: 0;
+            padding: 20px;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #333;
+        }
+        
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 30px;
+            border-bottom: 2px solid #2a7f2a;
+            padding-bottom: 15px;
+        }
+        
+        .logo {
+            width: 60px;
+            height: 60px;
+        }
+        
+        .title {
+            text-align: center;
+            flex-grow: 1;
+        }
+        
+        .title h1 {
+            margin: 0;
+            font-size: 20px;
+            color: #2a7f2a;
+            font-weight: bold;
+        }
+        
+        .title h2 {
+            margin: 5px 0 0 0;
+            font-size: 16px;
+            color: #666;
+            font-weight: normal;
+        }
+        
+        .farm-info {
+            text-align: right;
+            font-size: 10px;
+            color: #666;
+        }
+        
+        .summary {
+            background-color: #f8f9fa;
+            padding: 15px;
+            border-radius: 5px;
+            margin-bottom: 20px;
+        }
+        
+        .summary h3 {
+            margin: 0 0 10px 0;
+            color: #2a7f2a;
+            font-size: 14px;
+        }
+        
+        .summary-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 10px;
+        }
+        
+        .summary-item {
+            background: white;
+            padding: 10px;
+            border-radius: 3px;
+            border-left: 3px solid #2a7f2a;
+        }
+        
+        .summary-item .label {
+            font-size: 10px;
+            color: #666;
+            text-transform: uppercase;
+            font-weight: bold;
+        }
+        
+        .summary-item .value {
+            font-size: 16px;
+            font-weight: bold;
+            color: #333;
+            margin-top: 2px;
+        }
+        
+        .data-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-bottom: 20px;
+        }
+        
+        .data-table th {
+            background-color: #2a7f2a;
+            color: white;
+            padding: 8px;
+            text-align: left;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        
+        .data-table td {
+            padding: 6px 8px;
+            border-bottom: 1px solid #ddd;
+            font-size: 10px;
+        }
+        
+        .data-table tr:nth-child(even) {
+            background-color: #f8f9fa;
+        }
+        
+        .footer {
+            position: fixed;
+            bottom: 1cm;
+            left: 1cm;
+            right: 1cm;
+            border-top: 1px solid #ddd;
+            padding-top: 10px;
+            font-size: 8px;
+            color: #666;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .footer .system-info {
+            display: flex;
+            align-items: center;
+            gap: 5px;
+        }
+        
+        .footer .system-logo {
+            width: 16px;
+            height: 16px;
+        }
+        
+        .watermark {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%) rotate(-45deg);
+            font-size: 60px;
+            color: rgba(255, 0, 0, 0.1);
+            font-weight: bold;
+            z-index: -1;
+            pointer-events: none;
+        }
+        
+        .chart-container {
+            margin: 20px 0;
+            text-align: center;
+        }
+        
+        .chart-placeholder {
+            width: 100%;
+            height: 200px;
+            background-color: #f8f9fa;
+            border: 1px dashed #ccc;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #666;
+            font-style: italic;
+        }
+        
+        @media print {
+            body {
+                -webkit-print-color-adjust: exact;
+                print-color-adjust: exact;
+            }
+            
+            .page-break {
+                page-break-before: always;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Header -->
+    <div class="header">
+        <div class="logo">
+            <img src="{{FARM_LOGO}}" alt="Logo da Fazenda" class="logo" style="display: {{FARM_LOGO_DISPLAY}};">
+        </div>
+        <div class="title">
+            <h1>{{REPORT_TITLE}}</h1>
+            <h2>{{FARM_NAME}}</h2>
+        </div>
+        <div class="farm-info">
+            <div>Relatório gerado em: {{REPORT_DATE}}</div>
+            <div>Período: {{DATE_RANGE}}</div>
+        </div>
+    </div>
+
+    <!-- Summary Section -->
+    <div class="summary">
+        <h3>Resumo Executivo</h3>
+        <div class="summary-grid">
+            {{SUMMARY_ITEMS}}
+        </div>
+    </div>
+
+    <!-- Chart Section (if applicable) -->
+    <div class="chart-container" style="display: {{CHART_DISPLAY}};">
+        <div class="chart-placeholder">
+            Gráfico será inserido aqui
+        </div>
+    </div>
+
+    <!-- Data Table -->
+    <table class="data-table">
+        <thead>
+            <tr>
+                {{TABLE_HEADERS}}
+            </tr>
+        </thead>
+        <tbody>
+            {{TABLE_ROWS}}
+        </tbody>
+    </table>
+
+    <!-- Watermark for preview -->
+    <div class="watermark" style="display: {{WATERMARK_DISPLAY}};">
+        PRÉVIA
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+        <div class="system-info">
+            <img src="{{SYSTEM_LOGO}}" alt="LacTech" class="system-logo">
+            <span>Sistema de Gestão Leiteira - LacTech</span>
+        </div>
+        <div>
+            Gerado em: {{TIMESTAMP}}
+        </div>
+    </div>
+</body>
+</html>

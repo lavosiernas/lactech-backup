@@ -4,6 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Assinar LacTech - Sistema de Pagamento</title>
+    <meta name="color-scheme" content="dark light">
+    <script>
+      (function() {
+        try {
+          const stored = localStorage.getItem('theme');
+          const prefersDark = window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches;
+          const isDark = stored ? stored === 'dark' : prefersDark;
+          if (isDark) document.documentElement.classList.add('dark');
+        } catch (_) {}
+      })();
+    </script>
     <link rel="icon" href="https://i.postimg.cc/vmrkgDcB/lactech.png" type="image/x-icon">
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/@supabase/supabase-js@2"></script>

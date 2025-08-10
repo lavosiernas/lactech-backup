@@ -1,0 +1,332 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Configuração da Fazenda - LacTech</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link rel="icon" href="https://i.postimg.cc/vmrkgDcB/lactech.png" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="assets/style.css">
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'forest': {
+                            50: '#f0f9f0', 100: '#dcf2dc', 200: '#bce5bc', 300: '#8dd18d',
+                            400: '#5bb85b', 500: '#369e36', 600: '#2a7f2a', 700: '#236523',
+                            800: '#1f511f', 900: '#1a431a',
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+</head>
+<body class="bg-gray-50 min-h-screen">
+    <main class="container mx-auto px-4 py-8">
+        <div class="max-w-2xl mx-auto">
+            <!-- Header -->
+            <div class="text-center mb-8">
+                <img src="https://i.postimg.cc/vmrkgDcB/lactech.png" alt="LacTech" class="w-16 h-16 mx-auto mb-4 rounded-2xl shadow-lg">
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Configuração Inicial</h1>
+                <p class="text-gray-600">Configure sua fazenda e crie sua conta de administrador</p>
+            </div>
+
+            <!-- Messages -->
+            <div id="errorMessage" class="hidden bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4"></div>
+            <div id="successMessage" class="hidden bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4"></div>
+
+            <!-- Step 1: Farm Info -->
+            <div id="step1" class="bg-white rounded-2xl shadow-lg p-8 mb-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Informações da Fazenda</h2>
+                
+                <form id="farmForm" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div class="md:col-span-2">
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Nome da Fazenda *</label>
+                            <input type="text" required name="farm_name" class="login-input w-full px-4 py-3 rounded-xl" placeholder="Ex: Fazenda São João">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Proprietário *</label>
+                            <input type="text" required name="owner_name" class="login-input w-full px-4 py-3 rounded-xl" placeholder="Nome do proprietário">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">CNPJ/CPF</label>
+                            <input type="text" name="document" class="login-input w-full px-4 py-3 rounded-xl" placeholder="00.000.000/0000-00">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Cidade *</label>
+                            <input type="text" required name="city" class="login-input w-full px-4 py-3 rounded-xl" placeholder="Nome da cidade">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Estado *</label>
+                            <select required name="state" class="login-input w-full px-4 py-3 rounded-xl">
+                                <option value="">Selecione o estado</option>
+                                <option value="SP">São Paulo</option>
+                                <option value="MG">Minas Gerais</option>
+                                <option value="RJ">Rio de Janeiro</option>
+                                <option value="RS">Rio Grande do Sul</option>
+                                <option value="PR">Paraná</option>
+                                <option value="SC">Santa Catarina</option>
+                                <option value="GO">Goiás</option>
+                                <option value="MT">Mato Grosso</option>
+                                <option value="MS">Mato Grosso do Sul</option>
+                                <option value="BA">Bahia</option>
+                                <option value="ES">Espírito Santo</option>
+                                <!-- Outros estados -->
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Telefone *</label>
+                            <input type="tel" required name="phone" class="login-input w-full px-4 py-3 rounded-xl" placeholder="(00) 00000-0000">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+                            <input type="email" required name="email" class="login-input w-full px-4 py-3 rounded-xl" placeholder="contato@fazenda.com">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="block text-sm font-semibold text-gray-700 mb-2">Endereço Completo</label>
+                        <textarea name="address" rows="2" class="login-input w-full px-4 py-3 rounded-xl" placeholder="Rua, número, bairro..."></textarea>
+                    </div>
+
+                    <div class="pt-6">
+                        <button type="submit" class="w-full py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-all">
+                            Continuar →
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Step 2: Admin User -->
+            <div id="step2" class="hidden bg-white rounded-2xl shadow-lg p-8">
+                <h2 class="text-2xl font-bold text-gray-900 mb-6">Criar Conta de Administrador</h2>
+                
+                <form id="adminForm" class="space-y-6">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Nome Completo *</label>
+                            <input type="text" required name="admin_name" class="login-input w-full px-4 py-3 rounded-xl" placeholder="Seu nome completo">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Email *</label>
+                            <input type="email" required name="admin_email" class="login-input w-full px-4 py-3 rounded-xl" placeholder="seu@email.com">
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">WhatsApp *</label>
+                            <input type="tel" required name="admin_whatsapp" class="login-input w-full px-4 py-3 rounded-xl" placeholder="(00) 00000-0000">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Tipo de Usuário *</label>
+                            <select required name="admin_role" class="login-input w-full px-4 py-3 rounded-xl">
+                                <option value="">Selecione o tipo</option>
+                                <option value="proprietario">Proprietário da Fazenda</option>
+                                <option value="gerente">Gerente</option>
+                            </select>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Senha *</label>
+                            <input type="password" required name="admin_password" class="login-input w-full px-4 py-3 rounded-xl" placeholder="Crie uma senha segura" minlength="6">
+                        </div>
+                        
+                        <div>
+                            <label class="block text-sm font-semibold text-gray-700 mb-2">Confirmar Senha *</label>
+                            <input type="password" required name="admin_confirm_password" class="login-input w-full px-4 py-3 rounded-xl" placeholder="Confirme sua senha" minlength="6">
+                        </div>
+                    </div>
+
+                    <div class="flex items-start">
+                        <input type="checkbox" required class="login-checkbox w-4 h-4 rounded mt-0.5">
+                        <span class="ml-2 text-sm text-gray-600">
+                            Concordo com os <a href="#" class="text-green-600 hover:text-green-700 font-medium">Termos de Uso</a> e 
+                            <a href="#" class="text-green-600 hover:text-green-700 font-medium">Política de Privacidade</a>
+                        </span>
+                    </div>
+
+                    <div class="flex space-x-4 pt-6">
+                        <button type="button" onclick="backToStep1()" class="flex-1 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all">
+                            ← Voltar
+                        </button>
+                        <button type="submit" class="flex-1 px-6 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-all">
+                            Finalizar Configuração
+                        </button>
+                    </div>
+                </form>
+            </div>
+
+            <!-- Step 3: Success -->
+            <div id="step3" class="hidden bg-white rounded-2xl shadow-lg p-8 text-center">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-900 mb-4">Configuração Concluída!</h2>
+                <p class="text-gray-600 mb-8">Sua fazenda foi configurada com sucesso. Agora você pode acessar o sistema completo.</p>
+                
+                <button onclick="goToLogin()" class="px-8 py-3 bg-green-600 text-white font-semibold rounded-xl hover:bg-green-700 transition-all">
+                    Acessar Sistema
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <script>
+        // Initialize Supabase
+        const supabase = window.supabase.createClient(
+            'https://mauioyodoxmuzqweaasc.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1hdWlveW9kb3htdXpxd2VhYXNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ3NzYyNzksImV4cCI6MjA3MDM1MjI3OX0.m2nZ_5Vbi9aBz1vZ_oA-JHsd_yqD9brJXjnr39k7Ajc'
+        );
+
+        let farmData = {};
+
+        // Utility functions
+        function showError(message) {
+            const errorDiv = document.getElementById('errorMessage');
+            errorDiv.textContent = message;
+            errorDiv.classList.remove('hidden');
+            document.getElementById('successMessage').classList.add('hidden');
+        }
+
+        function showSuccess(message) {
+            const successDiv = document.getElementById('successMessage');
+            successDiv.textContent = message;
+            successDiv.classList.remove('hidden');
+            document.getElementById('errorMessage').classList.add('hidden');
+        }
+
+        function hideMessages() {
+            document.getElementById('errorMessage').classList.add('hidden');
+            document.getElementById('successMessage').classList.add('hidden');
+        }
+
+        // Step navigation
+        function showStep(step) {
+            document.getElementById('step1').classList.add('hidden');
+            document.getElementById('step2').classList.add('hidden');
+            document.getElementById('step3').classList.add('hidden');
+            document.getElementById(`step${step}`).classList.remove('hidden');
+            hideMessages();
+        }
+
+        function backToStep1() {
+            showStep(1);
+        }
+
+        function goToLogin() {
+            window.location.href = './login.html';
+        }
+
+        // Form handlers
+        document.addEventListener('DOMContentLoaded', function() {
+            // Farm form
+            document.getElementById('farmForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                farmData = {
+                    name: formData.get('farm_name'),
+                    owner: formData.get('owner_name'),
+                    cnpj: formData.get('document'),
+                    city: formData.get('city'),
+                    state: formData.get('state'),
+                    phone: formData.get('phone'),
+                    email: formData.get('email'),
+                    address: formData.get('address')
+                };
+
+                try {
+                    // Simple validation
+                    if (!farmData.name || !farmData.owner || !farmData.city || !farmData.state || !farmData.phone || !farmData.email) {
+                        throw new Error('Por favor, preencha todos os campos obrigatórios');
+                    }
+
+                    showSuccess('Informações da fazenda validadas com sucesso!');
+                    setTimeout(() => showStep(2), 1000);
+                    
+                } catch (error) {
+                    showError(error.message);
+                }
+            });
+
+            // Admin form
+            document.getElementById('adminForm').addEventListener('submit', async function(e) {
+                e.preventDefault();
+                
+                const formData = new FormData(this);
+                const adminData = {
+                    name: formData.get('admin_name'),
+                    email: formData.get('admin_email'),
+                    whatsapp: formData.get('admin_whatsapp'),
+                    role: formData.get('admin_role'),
+                    password: formData.get('admin_password'),
+                    confirmPassword: formData.get('admin_confirm_password')
+                };
+
+                try {
+                    // Validation
+                    if (!adminData.name || !adminData.email || !adminData.whatsapp || !adminData.role || !adminData.password) {
+                        throw new Error('Por favor, preencha todos os campos obrigatórios');
+                    }
+
+                    if (adminData.password !== adminData.confirmPassword) {
+                        throw new Error('As senhas não coincidem');
+                    }
+
+                    if (adminData.password.length < 6) {
+                        throw new Error('A senha deve ter pelo menos 6 caracteres');
+                    }
+
+                    // Try to create the user account
+                    const { data: authData, error: authError } = await supabase.auth.signUp({
+                        email: adminData.email,
+                        password: adminData.password,
+                        options: {
+                            data: {
+                                name: adminData.name,
+                                farm_name: farmData.name,
+                                role: adminData.role,
+                                whatsapp: adminData.whatsapp,
+                                city: farmData.city,
+                                state: farmData.state
+                            }
+                        }
+                    });
+
+                    if (authError) {
+                        throw new Error(authError.message);
+                    }
+
+                    showSuccess('Conta criada com sucesso!');
+                    setTimeout(() => showStep(3), 1000);
+                    
+                } catch (error) {
+                    showError(error.message || 'Erro ao criar conta. Tente novamente.');
+                }
+            });
+        });
+    </script>
+</body>
+</html>

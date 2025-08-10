@@ -21,7 +21,7 @@
     <script src="supabase_config_fixed.js"></script>
     <link rel="icon" href="https://i.postimg.cc/vmrkgDcB/lactech.png" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="assets/css/style.css">
+    <link rel="stylesheet" href="assets/style.css">
 </head>
 <body class="gradient-mesh antialiased">
 
@@ -55,7 +55,7 @@
                 </nav>
 
                 <div class="flex items-center space-x-4">
-                    <button onclick="openProfileModal()" class="flex items-center space-x-3 text-white hover:text-forest-200 p-2 rounded-lg transition-all">
+                    <button class="flex items-center space-x-3 text-white hover:text-forest-200 p-2 rounded-lg transition-all">
                         <div class="w-8 h-8 bg-white bg-opacity-20 rounded-full flex items-center justify-center overflow-hidden">
                             <img id="headerProfilePhoto" src="" alt="Foto de Perfil" class="w-full h-full object-cover rounded-full hidden">
                             <svg id="headerProfileIcon" class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
@@ -68,7 +68,7 @@
                         </div>
                     </button>
                     <!-- Theme toggle small -->
-                    <button type="button" onclick="toggleTheme()" class="p-2 rounded-lg hover:bg-white/10">
+                    <button type="button" class="p-2 rounded-lg hover:bg-white/10">
                         <svg class="w-5 h-5 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                             <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
                         </svg>
@@ -264,7 +264,7 @@
 
                     <!-- Botões -->
                     <div class="flex flex-col sm:flex-row items-center justify-between gap-4 pt-4 border-t border-gray-200">
-                        <button type="button" onclick="resetForm()" 
+                        <button type="button" 
                                 class="w-full sm:w-auto px-6 py-3 border border-red-300 text-red-700 font-medium rounded-md hover:bg-red-50 transition-colors flex items-center">
                             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
@@ -288,7 +288,7 @@
                     <h2 class="text-2xl font-bold text-slate-900">Histórico de Produções</h2>
                     <div class="flex items-center space-x-2">
                         <input type="date" id="filterDate" class="px-3 py-2 border border-slate-200 rounded-lg text-sm">
-                        <button onclick="filterHistory()" class="px-4 py-2 bg-forest-500 text-white rounded-lg text-sm hover:bg-forest-600">
+                        <button class="px-4 py-2 bg-forest-500 text-white rounded-lg text-sm hover:bg-forest-600">
                             Filtrar
                             </button>
                     </div>
@@ -1792,9 +1792,6 @@
                 log('Timeout concluído - carregando dados...');
                 carregarDados();
             }, 500);
-        });
-
-        log('=== SCRIPT FUNCIONÁRIO COMPLETO CARREGADO ===');
-    </script>
+    <script src="./assets/funcionario.js"></script>
 </body>
 </html>

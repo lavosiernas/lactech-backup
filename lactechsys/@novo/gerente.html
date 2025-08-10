@@ -166,8 +166,7 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase_config_fixed.js"></script>
-    <script src="auth_fix.js"></script>
+
     <script>
         // Non-blocking alert shim routed to showNotification when available
         (function(){
@@ -9057,8 +9056,9 @@ document.addEventListener('DOMContentLoaded', function() {
     if (reportsTab) {
         observer.observe(reportsTab, { attributes: true });
     }
-});
-
     </script>
+    
+    <!-- JavaScript movido para arquivo externo -->
+    <script src="./assets/gerente.js"></script>
 </body>
 </html>
