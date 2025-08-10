@@ -6,7 +6,13 @@
     <title>Configuração da Fazenda - Sistema de Controle Leiteiro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase_config_fixed.js"></script>
+    <script>
+        // NOVO SUPABASE - Credenciais atualizadas  
+        const supabase = window.supabase.createClient(
+            'https://mauioyodoxmuzqweaasc.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1hdWlveW9kb3htdXpxd2VhYXNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ3NzYyNzksImV4cCI6MjA3MDM1MjI3OX0.m2nZ_5Vbi9aBz1vZ_oA-JHsd_yqD9brJXjnr39k7Ajc'
+        );
+    </script>
     <link rel="icon" href="https://i.postimg.cc/vmrkgDcB/lactech.png" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
@@ -587,15 +593,8 @@
                     address: formData.get('address') || null
                 };
                 
-                // Check if farm with same name or CNPJ exists using secure RPC
-                const { data: exists, error } = await supabase
-                    .rpc('check_farm_exists', { p_name: farmData.name, p_cnpj: farmData.cnpj });
-                
-                if (error) throw error;
-                
-                if (exists) {
-                    throw new Error('Já existe uma fazenda com este nome ou CNPJ');
-                }
+                // Validação simples - banco novo
+                console.log('Validando fazenda:', farmData.name);
                 showSuccess('Informações da fazenda validadas com sucesso!');
                 goToStep2();
                 

@@ -8,21 +8,20 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="assets/js/console-guard.js"></script>
     <script>
-        // Chart.js theme helper to adapt to dark mode
-        function getChartTheme(isDark) {
+        // Chart.js configuração - tema claro apenas
+        function getChartTheme() {
             return {
-                gridColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
-                tickColor: isDark ? '#e5e7eb' : '#475569',
-                lineBorder: isDark ? '#34d399' : '#369e36',
-                lineFill: isDark ? 'rgba(52, 211, 153, 0.15)' : 'rgba(54, 158, 54, 0.1)',
-                barColor: isDark ? '#60a5fa' : '#2563eb'
+                gridColor: 'rgba(0,0,0,0.08)',
+                tickColor: '#475569',
+                lineBorder: '#369e36',
+                lineFill: 'rgba(54, 158, 54, 0.1)',
+                barColor: '#2563eb'
             };
         }
 
         function applyChartTheme() {
             try {
-                const isDark = document.documentElement.classList.contains('dark');
-                const t = getChartTheme(isDark);
+                const t = getChartTheme();
                 const charts = [
                     window.volumeChart,
                     window.dashboardWeeklyChart,
@@ -155,8 +154,13 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script src="supabase_config_fixed.js"></script>
-    <script src="auth_fix.js"></script>
+    <script>
+        const supabase = window.supabase.createClient(
+            'https://mauioyodoxmuzqweaasc.supabase.co',
+            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1hdWlveW9kb3htdXpxd2VhYXNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ3NzYyNzksImV4cCI6MjA3MDM1MjI3OX0.m2nZ_5Vbi9aBz1vZ_oA-JHsd_yqD9brJXjnr39k7Ajc'
+        );
+    </script></script>
+
     <script>
         // Non-blocking alert shim routed to showNotification when available
         (function(){
@@ -1661,20 +1665,7 @@
                 <div class="bg-white rounded-2xl p-6 border border-gray-200">
                     <h4 class="text-lg font-semibold text-gray-900 mb-4">Preferências</h4>
                     <div class="flex items-center justify-between">
-                        <div>
-                            <h5 class="font-medium text-gray-900">Modo Escuro</h5>
-                            <p class="text-sm text-gray-600">Alternar entre tema claro e escuro</p>
-                        </div>
-                        <div class="theme-toggle" onclick="toggleTheme()">
-                            <div class="theme-toggle-slider">
-                                <svg class="w-4 h-4 text-yellow-500 sun-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
-                                </svg>
-                                <svg class="w-4 h-4 text-blue-400 moon-icon hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
-                                    <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
-                                </svg>
-                            </div>
-                        </div>
+                        <!-- Seção de tema removida -->
                     </div>
                 </div>
                 
@@ -1816,7 +1807,7 @@ document.addEventListener('DOMContentLoaded', async function() {
         return; // Stop execution if not authenticated
     }
     
-    initializeTheme(); // Initialize theme first
+    // Tema removido
     initializeCharts(); // Initialize charts before loading data
     await initializePage();
     setupEventListeners();
@@ -2240,7 +2231,7 @@ function initializeTheme() {
 
 // Chamar a inicialização do tema quando a página carregar
 document.addEventListener('DOMContentLoaded', function() {
-    initializeTheme();
+    // Tema removido
 });
 
 // Show notification function melhorada
