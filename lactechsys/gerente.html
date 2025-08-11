@@ -8,20 +8,21 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <script src="assets/js/console-guard.js"></script>
     <script>
-        // Chart.js configuração - tema claro apenas
-        function getChartTheme() {
+        // Chart.js theme helper to adapt to dark mode
+        function getChartTheme(isDark) {
             return {
-                gridColor: 'rgba(0,0,0,0.08)',
-                tickColor: '#475569',
-                lineBorder: '#369e36',
-                lineFill: 'rgba(54, 158, 54, 0.1)',
-                barColor: '#2563eb'
+                gridColor: isDark ? 'rgba(255,255,255,0.1)' : 'rgba(0,0,0,0.08)',
+                tickColor: isDark ? '#e5e7eb' : '#475569',
+                lineBorder: isDark ? '#34d399' : '#369e36',
+                lineFill: isDark ? 'rgba(52, 211, 153, 0.15)' : 'rgba(54, 158, 54, 0.1)',
+                barColor: isDark ? '#60a5fa' : '#2563eb'
             };
         }
 
         function applyChartTheme() {
             try {
-                const t = getChartTheme();
+                const isDark = document.documentElement.classList.contains('dark');
+                const t = getChartTheme(isDark);
                 const charts = [
                     window.volumeChart,
                     window.dashboardWeeklyChart,
@@ -154,13 +155,9 @@
         }
     </style>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        const supabase = window.supabase.createClient(
-            'https://mauioyodoxmuzqweaasc.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1hdWlveW9kb3htdXpxd2VhYXNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ3NzYyNzksImV4cCI6MjA3MDM1MjI3OX0.m2nZ_5Vbi9aBz1vZ_oA-JHsd_yqD9brJXjnr39k7Ajc'
-        );
-    </script></script>
-
+    <script src="supabase_config_fixed.js"></script>
+    <script src="auth_fix.js"></script>
+    <script src="modal_fix_complete.js"></script>
     <script>
         // Non-blocking alert shim routed to showNotification when available
         (function(){
@@ -242,6 +239,86 @@
             }
         }
     </script>
+    
+        <!-- CORREÇÃO AUTOMÁTICA DO MODAL -->
+    <script>
+        // Script para corrigir modal que abre automaticamente
+        (function() {
+            'use strict';
+            
+            console.log('🚨 PROTEÇÃO ULTRA AGRESSIVA ATIVADA');
+            
+            // Função para destruir completamente os modais
+            function destroyModals() {
+                // Destruir modal de exclusão
+                const deleteModal = document.getElementById('deleteUserModal');
+                if (deleteModal) {
+                    deleteModal.remove();
+                    console.log('💥 Modal de exclusão destruído');
+                }
+                
+                // Destruir modal de escolha de foto
+                const photoModal = document.getElementById('photoChoiceModal');
+                if (photoModal) {
+                    photoModal.remove();
+                    console.log('💥 Modal de foto destruído');
+                }
+                
+                // Limpar variáveis
+                if (typeof userToDelete !== 'undefined') {
+                    userToDelete = null;
+                }
+                
+                // Remover backdrop do body
+                document.body.style.overflow = 'auto';
+                document.body.style.position = 'static';
+                document.body.style.pointerEvents = 'auto';
+            }
+            
+            // Executar imediatamente
+            destroyModals();
+            
+            // Proteção contínua - destruir modais a cada 100ms
+            setInterval(destroyModals, 100);
+            
+            // Substituir completamente a função deleteUser
+            window.deleteUser = function(userId, userName) {
+                console.log('🚫 Função deleteUser completamente bloqueada');
+                return false;
+            };
+            
+            // Substituir funções de modal de foto
+            window.closePhotoChoiceModal = function() {
+                console.log('🚫 Função closePhotoChoiceModal bloqueada');
+                const photoModal = document.getElementById('photoChoiceModal');
+                if (photoModal) {
+                    photoModal.remove();
+                }
+            };
+            
+            window.choosePhotoSource = function(source) {
+                console.log('🚫 Função choosePhotoSource bloqueada');
+                const photoModal = document.getElementById('photoChoiceModal');
+                if (photoModal) {
+                    photoModal.remove();
+                }
+            };
+            
+            // Interceptar todas as tentativas de criar modais
+            const originalCreateElement = document.createElement;
+            document.createElement = function(tagName) {
+                const element = originalCreateElement.call(this, tagName);
+                if (element.id === 'deleteUserModal' || element.id === 'photoChoiceModal') {
+                    console.log('🚫 Tentativa de criar modal bloqueada:', element.id);
+                    return originalCreateElement.call(this, 'div');
+                }
+                return element;
+            };
+            
+            console.log('🛡️ Todos os modais completamente bloqueados e destruídos');
+            
+        })();
+    </script>
 </head>
 <body class="gradient-mesh antialiased transition-colors duration-300" id="mainBody">
 
@@ -273,7 +350,7 @@
                         Qualidade
                     </button>
                     <button class="nav-item relative px-3 py-2 text-sm font-semibold text-white hover:text-forest-200 transition-all rounded-lg" data-tab="payments">
-                        Pagamentos
+                        Financeiro
                     </button>
                     <button class="nav-item relative px-3 py-2 text-sm font-semibold text-white hover:text-forest-200 transition-all rounded-lg" data-tab="users">
                         Usuários
@@ -703,10 +780,10 @@
             </div>
         </div>
 
-        <!-- Payments Tab -->
+        <!-- Financial Records Tab -->
         <div id="payments-tab" class="tab-content hidden">
             <div class="space-y-6">
-                <!-- Payments Header -->
+                <!-- Financial Records Header -->
                 <div class="data-card rounded-2xl p-6">
                     <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
                         <div>
@@ -941,7 +1018,7 @@
                 <svg class="w-4 h-4 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
                     <path stroke-linecap="round" stroke-linejoin="round" d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1"></path>
                 </svg>
-                <span class="text-xs font-semibold">Pagamentos</span>
+                <span class="text-xs font-semibold">Financeiro</span>
             </button>
             <button class="mobile-nav-item flex flex-col items-center py-2 px-1 transition-all" data-tab="users">
                 <svg class="w-4 h-4 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
@@ -1515,10 +1592,9 @@
         </div>
     </div>
 
-    <!-- Modal de Escolha de Fonte da Foto --> 
-    <div id="photoChoiceModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[10000] hidden backdrop-blur-sm"> 
+    <!-- Modal de Escolha de Fonte da Foto - REMOVIDO TEMPORARIAMENTE --> 
+    <!-- <div id="photoChoiceModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[10000] hidden backdrop-blur-sm"> 
         <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl transform transition-all duration-300 scale-95 opacity-0" id="modalContent"> 
-            <!-- Header do Modal --> 
             <div class="text-center mb-8"> 
                 <div class="w-16 h-16 bg-forest-100 rounded-full flex items-center justify-center mx-auto mb-4"> 
                     <svg class="w-8 h-8 text-forest-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"> 
@@ -1530,7 +1606,6 @@
                 <p class="text-sm text-gray-500">Selecione de onde deseja obter sua foto</p> 
             </div> 
     
-            <!-- Botões de Ação --> 
             <div class="space-y-4 mb-6"> 
                 <button onclick="choosePhotoSource('camera')" class="group w-full px-6 py-4 bg-forest-600 text-white rounded-xl hover:bg-forest-700 transition-all duration-200 transform hover:scale-[1.02] hover:shadow-lg flex items-center justify-center space-x-3 font-medium"> 
                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"> 
@@ -1548,12 +1623,11 @@
                 </button> 
             </div> 
     
-            <!-- Botão Cancelar --> 
             <button onclick="closePhotoChoiceModal()" class="w-full px-6 py-3 border-2 border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 font-medium"> 
                 Cancelar 
             </button> 
         </div> 
-    </div>
+    </div> -->
 
 <!-- Modal de Perfil do Gerente -->
     <div id="profileModal" class="fullscreen-modal">
@@ -1665,7 +1739,20 @@
                 <div class="bg-white rounded-2xl p-6 border border-gray-200">
                     <h4 class="text-lg font-semibold text-gray-900 mb-4">Preferências</h4>
                     <div class="flex items-center justify-between">
-                        <!-- Seção de tema removida -->
+                        <div>
+                            <h5 class="font-medium text-gray-900">Modo Escuro</h5>
+                            <p class="text-sm text-gray-600">Alternar entre tema claro e escuro</p>
+                        </div>
+                        <div class="theme-toggle" onclick="toggleTheme()">
+                            <div class="theme-toggle-slider">
+                                <svg class="w-4 h-4 text-yellow-500 sun-icon" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z"></path>
+                                </svg>
+                                <svg class="w-4 h-4 text-blue-400 moon-icon hidden" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z"></path>
+                                </svg>
+                            </div>
+                        </div>
                     </div>
                 </div>
                 
@@ -1692,6 +1779,83 @@
                             Alterar Senha
                         </button>
                     </form>
+                </div>
+                
+                <!-- Criação de Contas Secundárias -->
+                <div class="bg-white rounded-2xl p-6 border border-gray-200">
+                    <div class="flex items-center justify-between mb-4">
+                        <h4 class="text-lg font-semibold text-gray-900">Contas Secundárias</h4>
+                        <button onclick="toggleSecondaryAccountForm()" class="px-4 py-2 text-sm bg-forest-600 hover:bg-forest-700 text-white font-medium rounded-lg transition-all">
+                            <svg class="w-4 h-4 inline mr-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                            </svg>
+                            Nova Conta
+                        </button>
+                    </div>
+                    
+                    <p class="text-sm text-gray-600 mb-4">Crie contas de funcionário ou veterinário usando seus dados como base</p>
+                    
+                    <!-- Lista de Contas Secundárias -->
+                    <div id="secondaryAccountsList" class="space-y-3 mb-4">
+                        <!-- Contas serão carregadas aqui -->
+                    </div>
+                    
+                    <!-- Formulário de Nova Conta -->
+                    <div id="secondaryAccountForm" class="hidden border-t border-gray-200 pt-4">
+                        <form id="createSecondaryAccountForm" class="space-y-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-800 mb-2">Tipo de Conta</label>
+                                    <select name="account_type" required class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none bg-white">
+                                        <option value="">Selecione o tipo</option>
+                                        <option value="funcionario">Funcionário</option>
+                                        <option value="veterinario">Veterinário</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-800 mb-2">Email da Nova Conta</label>
+                                    <input type="email" name="email" required class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none bg-white" placeholder="email@exemplo.com">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-800 mb-2">Nome Completo</label>
+                                    <input type="text" name="name" id="secondaryAccountName" class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none bg-white" placeholder="Nome será copiado automaticamente">
+                                </div>
+                                <div>
+                                    <label class="block text-sm font-semibold text-gray-800 mb-2">WhatsApp</label>
+                                    <input type="tel" name="whatsapp" id="secondaryAccountWhatsApp" class="w-full px-4 py-3 border border-slate-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none bg-white" placeholder="WhatsApp será copiado automaticamente">
+                                </div>
+                            </div>
+                            
+                            <div class="bg-blue-50 border border-blue-200 rounded-xl p-4">
+                                <div class="flex items-start">
+                                    <svg class="w-5 h-5 text-blue-600 mt-0.5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                    </svg>
+                                    <div>
+                                        <h5 class="text-sm font-semibold text-blue-800 mb-1">Informações Importantes</h5>
+                                        <ul class="text-sm text-blue-700 space-y-1">
+                                            <li>• A conta será criada com seus dados pessoais como base</li>
+                                            <li>• Uma senha temporária será gerada automaticamente</li>
+                                            <li>• O usuário deverá alterar a senha no primeiro acesso</li>
+                                            <li>• A conta terá acesso apenas à sua fazenda</li>
+                                        </ul>
+                                    </div>
+                                </div>
+                            </div>
+                            
+                            <div class="flex justify-end space-x-3">
+                                <button type="button" onclick="cancelSecondaryAccountForm()" class="px-6 py-3 border border-gray-300 text-gray-700 font-semibold rounded-xl hover:bg-gray-50 transition-all">
+                                    Cancelar
+                                </button>
+                                <button type="submit" class="px-6 py-3 gradient-forest text-white font-semibold rounded-xl hover:shadow-lg transition-all">
+                                    <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                        <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                    </svg>
+                                    Criar Conta
+                                </button>
+                            </div>
+                        </form>
+                    </div>
                 </div>
                 
                 <!-- Sair do Sistema -->
@@ -1737,10 +1901,9 @@
         </div>
     </div>
 
-    <!-- Modal de Confirmação de Exclusão -->
-    <div id="deleteUserModal" class="fixed inset-0 bg-black bg-opacity-60 items-center justify-center z-[10000] hidden backdrop-blur-sm">
+    <!-- Modal de Confirmação de Exclusão - REMOVIDO TEMPORARIAMENTE -->
+    <!-- <div id="deleteUserModal" class="fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[10000] hidden backdrop-blur-sm" style="display: none !important;">
         <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
-            <!-- Header do Modal -->
             <div class="text-center mb-6">
                 <div class="w-16 h-16 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <svg class="w-8 h-8 text-red-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -1750,13 +1913,9 @@
                 <h3 class="text-xl font-bold text-gray-800 mb-2">Confirmar Exclusão</h3>
                 <p class="text-sm text-gray-500">Esta ação não pode ser desfeita</p>
             </div>
-
-            <!-- Mensagem de Confirmação -->
             <div class="text-center mb-6">
                 <p class="text-gray-700">Tem certeza que deseja excluir o usuário <strong id="deleteUserName">Nome do Usuário</strong>?</p>
             </div>
-
-            <!-- Botões de Ação -->
             <div class="flex space-x-4">
                 <button onclick="closeDeleteUserModal()" class="flex-1 px-6 py-3 border-2 border-gray-200 text-gray-600 rounded-xl hover:bg-gray-50 hover:border-gray-300 transition-all duration-200 font-medium">
                     Cancelar
@@ -1766,7 +1925,7 @@
                 </button>
             </div>
         </div>
-    </div>
+    </div> -->
 
     <script>
 
@@ -1801,13 +1960,68 @@ async function startBlockWatcher(intervalMs = 15000) {
 
 // Initialize page
 document.addEventListener('DOMContentLoaded', async function() {
+    // Fechar qualquer modal que possa estar aberto
+    const deleteModal = document.getElementById('deleteUserModal');
+    if (deleteModal && !deleteModal.classList.contains('hidden')) {
+        deleteModal.classList.add('hidden');
+        console.log('Modal de exclusão fechado automaticamente no carregamento da página');
+    }
+    
+    // Monitorar mudanças no modal para detectar abertura automática
+    if (deleteModal) {
+        const observer = new MutationObserver(function(mutations) {
+            mutations.forEach(function(mutation) {
+                if (mutation.type === 'attributes' && mutation.attributeName === 'class') {
+                    const target = mutation.target;
+                    if (!target.classList.contains('hidden')) {
+                        console.warn('Modal de exclusão foi aberto! Stack trace:', new Error().stack);
+                        // Se não há userToDelete definido, fechar o modal
+                        if (!userToDelete) {
+                            console.log('Fechando modal aberto sem userToDelete');
+                            target.classList.add('hidden');
+                        }
+                    }
+                }
+            });
+        });
+        observer.observe(deleteModal, { attributes: true, attributeFilter: ['class'] });
+    }
+    
+    // Proteção adicional: forçar fechamento do modal a cada 100ms por 5 segundos
+    let protectionCount = 0;
+    const protectionInterval = setInterval(function() {
+        if (protectionCount >= 50) { // 5 segundos
+            clearInterval(protectionInterval);
+            return;
+        }
+        
+        const modal = document.getElementById('deleteUserModal');
+        if (modal && !modal.classList.contains('hidden')) {
+            if (!userToDelete || !userToDelete.id) {
+                modal.classList.add('hidden');
+                // Remover backdrop também
+                modal.style.display = 'none';
+                modal.style.visibility = 'hidden';
+                modal.style.opacity = '0';
+                modal.style.pointerEvents = 'none';
+                console.log('Proteção ativa: modal e backdrop fechados');
+            }
+        }
+        protectionCount++;
+    }, 100);
+    
+    // Limpar variável userToDelete
+    if (typeof userToDelete !== 'undefined') {
+        userToDelete = null;
+    }
+    
     // Check authentication first
     const isAuthenticated = await checkAuthentication();
     if (!isAuthenticated) {
         return; // Stop execution if not authenticated
     }
     
-    // Tema removido
+    initializeTheme(); // Initialize theme first
     initializeCharts(); // Initialize charts before loading data
     await initializePage();
     setupEventListeners();
@@ -1815,34 +2029,6 @@ document.addEventListener('DOMContentLoaded', async function() {
     setInterval(updateDateTime, 60000); // Update every minute
     // Iniciar verificação de bloqueio durante a sessão
     startBlockWatcher(15000);
-    // Garante que nenhum modal comece aberto por engano
-    const overlayModals = ['deleteUserModal','photoChoiceModal'];
-    const fullscreenModals = ['profileModal','addUserModal','editUserModal'];
-    overlayModals.forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.classList.add('hidden');
-        el.classList.remove('flex');
-    });
-    fullscreenModals.forEach(id => {
-        const el = document.getElementById(id);
-        if (!el) return;
-        el.classList.remove('hidden');
-        el.classList.remove('flex');
-        el.classList.remove('show');
-    });
-});
-
-// Fechar o modal de exclusão ao clicar fora do conteúdo
-document.addEventListener('DOMContentLoaded', function() {
-    const modal = document.getElementById('deleteUserModal');
-    if (modal) {
-        modal.addEventListener('click', function(e) {
-            if (e.target === modal) {
-                closeDeleteUserModal();
-            }
-        });
-    }
 });
 
 async function initializePage() {
@@ -1965,11 +2151,13 @@ async function initializePage() {
             // Get user's farm_id for recent activities
             const { data: { user } } = await supabase.auth.getUser();
             if (user) {
-                const { data: userData } = await supabase
+                const { data: usersData } = await supabase
                     .from('users')
                     .select('farm_id')
                     .eq('email', user.email)
-                    .single();
+                    .order('created_at', { ascending: true }); // Sempre usar conta primária
+                
+                const userData = usersData?.[0]; // Primeira conta = primária
                 
                 if (userData?.farm_id) {
                     await loadRecentActivities(userData.farm_id);
@@ -2133,12 +2321,14 @@ async function getFarmName() {
             return 'Minha Fazenda';
         }
 
-        // Get user's farm_id from users table
-        const { data: userDbData, error: userError } = await supabase
+        // Get user's farm_id from users table - SEMPRE USAR CONTA PRIMÁRIA
+        const { data: usersData, error: userError } = await supabase
             .from('users')
             .select('farm_id')
             .eq('email', user.email)
-            .maybeSingle();
+            .order('created_at', { ascending: true }); // Primeira conta = primária
+        
+        const userDbData = usersData?.[0]; // Sempre usar a primeira conta
             
         if (userError) {
             console.warn('Error fetching user data:', userError);
@@ -2207,6 +2397,28 @@ function toggleTheme() {
     }, 100);
 }
 
+// Função utilitária para sempre buscar a conta primária
+async function getPrimaryUserAccount(email) {
+    try {
+        const { data: usersData, error } = await supabase
+            .from('users')
+            .select('*')
+            .eq('email', email)
+            .eq('is_active', true)
+            .order('created_at', { ascending: true }); // Primeira conta = primária
+        
+        if (error) {
+            console.error('Erro ao buscar conta primária:', error);
+            return null;
+        }
+        
+        return usersData?.[0] || null; // Sempre retorna a primeira conta
+    } catch (error) {
+        console.error('Erro na função getPrimaryUserAccount:', error);
+        return null;
+    }
+}
+
 // Initialize theme
 function initializeTheme() {
     const savedTheme = localStorage.getItem('theme');
@@ -2231,7 +2443,7 @@ function initializeTheme() {
 
 // Chamar a inicialização do tema quando a página carregar
 document.addEventListener('DOMContentLoaded', function() {
-    // Tema removido
+    initializeTheme();
 });
 
 // Show notification function melhorada
@@ -2723,23 +2935,23 @@ async function loadDashboardData() {
             document.getElementById('qualityAverage').textContent = '0%';
         }
 
-        // Load payments data - handle if table doesn't exist
+        // Load financial data - handle if table doesn't exist
         try {
-            const { data: paymentsData, error: paymentsError } = await supabase
-                .from('payments')
-                .select('net_amount')
+            const { data: financialData, error: financialError } = await supabase
+                .from('financial_records')
+                .select('amount, type')
                 .eq('farm_id', userData.farm_id)
-                .eq('payment_status', 'pendente')
+                .eq('type', 'despesa')
                 .gte('created_at', new Date(new Date().getFullYear(), new Date().getMonth(), 1).toISOString());
 
-            if (!paymentsError && paymentsData && paymentsData.length > 0) {
-                const pendingAmount = paymentsData.reduce((sum, record) => sum + (record.net_amount || 0), 0);
+            if (!financialError && financialData && financialData.length > 0) {
+                const pendingAmount = financialData.reduce((sum, record) => sum + (record.amount || 0), 0);
                 document.getElementById('pendingPayments').textContent = `R$ ${pendingAmount.toLocaleString('pt-BR')}`;
             } else {
                 document.getElementById('pendingPayments').textContent = 'R$ 0';
             }
         } catch (error) {
-            console.log('Payments table not available');
+            console.log('Financial records table not available');
             document.getElementById('pendingPayments').textContent = 'R$ 0';
         }
 
@@ -2870,7 +3082,7 @@ async function loadQualityData() {
         
         const { data: qualityData, error } = await supabase
             .from('quality_tests')
-            .select('fat_percentage, protein_percentage, somatic_cell_count, total_bacterial_count, test_date')
+            .select('fat_percentage, protein_percentage, scc, cbt, test_date')
             .eq('farm_id', qualityUserData.farm_id)
             .not('fat_percentage', 'is', null)
             .not('protein_percentage', 'is', null)
@@ -2909,8 +3121,8 @@ async function loadQualityData() {
             
             const avgFat = validQualityData.reduce((sum, record) => sum + (record.fat_percentage || 0), 0) / validQualityData.length;
             const avgProtein = validQualityData.reduce((sum, record) => sum + (record.protein_percentage || 0), 0) / validQualityData.length;
-            const avgSCC = validQualityData.reduce((sum, record) => sum + (record.somatic_cell_count || 0), 0) / validQualityData.length;
-            const avgTBC = validQualityData.reduce((sum, record) => sum + (record.total_bacterial_count || 0), 0) / validQualityData.length;
+                            const avgSCC = validQualityData.reduce((sum, record) => sum + (record.scc || 0), 0) / validQualityData.length;
+                            const avgTBC = validQualityData.reduce((sum, record) => sum + (record.cbt || 0), 0) / validQualityData.length;
             
             console.log('📈 Médias calculadas:', { avgFat, avgProtein, avgSCC, avgTBC });
             
@@ -3008,11 +3220,12 @@ async function loadPaymentsData() {
             throw userError;
         }
 
-        // Get sales data from payments table
+        // Get sales data from financial records table
         const { data: salesData, error: salesError } = await supabase
-            .from('payments')
-            .select('net_amount, payment_status, payment_date, created_at')
+            .from('financial_records')
+            .select('amount, type, record_date, created_at, description')
             .eq('farm_id', userData.farm_id)
+            .eq('type', 'receita')
             .order('created_at', { ascending: false });
 
         if (salesError) {
@@ -3025,23 +3238,11 @@ async function loadPaymentsData() {
         let overdueAmount = 0;
 
         if (salesData && salesData.length > 0) {
-            const today = new Date();
-            
+            // Para financial_records, consideramos todas as receitas como "pagas"
+            // pois são registros de transações já realizadas
             salesData.forEach(sale => {
-                const amount = parseFloat(sale.net_amount) || 0;
-                const paymentDate = new Date(sale.payment_date);
-                
-                if (sale.payment_status === 'pago') {
-                    completedAmount += amount;
-                } else if (sale.payment_status === 'pendente') {
-                    if (paymentDate < today) {
-                        overdueAmount += amount;
-                    } else {
-                        pendingAmount += amount;
-                    }
-                } else if (sale.payment_status === 'cancelado') {
-                    // Vendas canceladas não são contabilizadas
-                }
+                const amount = parseFloat(sale.amount) || 0;
+                completedAmount += amount;
             });
         }
 
@@ -3115,25 +3316,6 @@ async function loadUsersData() {
                     const userId = this.getAttribute('data-user-id');
                     const currentStatus = this.getAttribute('data-current-status') === 'true';
                     toggleUserAccess(userId, currentStatus);
-                });
-            });
-            
-            // Add event listeners for delete buttons
-            document.querySelectorAll('.action-button.delete').forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const userId = this.getAttribute('data-user-id');
-                    const userName = this.getAttribute('data-user-name');
-                    deleteUser(userId, userName);
-                });
-            });
-            
-            // Add event listeners for edit buttons
-            document.querySelectorAll('.action-button.edit').forEach(button => {
-                button.addEventListener('click', function(e) {
-                    e.preventDefault();
-                    const userId = this.getAttribute('data-user-id');
-                    editUser(userId);
                 });
             });
         }, 100);
@@ -3779,18 +3961,18 @@ function displayUsersList(users) {
                 <div class="user-card-footer">
                     <div class="user-created">Criado em: ${new Date(user.created_at).toLocaleDateString('pt-BR')}</div>
                     <div class="user-actions">
-                        <button class="action-button edit" title="Editar usuário" data-user-id="${user.id}">
+                        <button onclick="editUser('${user.id}')" class="action-button edit" title="Editar usuário">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"></path>
                             </svg>
                         </button>
-                        <button class="action-button permissions ${!user.is_active ? 'blocked' : ''}" title="${user.is_active ? 'Bloquear acesso' : 'Desbloquear acesso'}" data-user-id="${user.id}" data-current-status="${user.is_active}">
+                        <button onclick="toggleUserAccess('${user.id}', ${user.is_active})" class="action-button permissions ${!user.is_active ? 'blocked' : ''}" title="${user.is_active ? 'Bloquear acesso' : 'Desbloquear acesso'}" data-user-id="${user.id}" data-current-status="${user.is_active}">
                             ${user.is_active ? 
                                 '<svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z"></path></svg>' :
                                 '<svg class="w-4 h-4 text-red-500" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2"><path stroke-linecap="round" stroke-linejoin="round" d="M8 11V7a4 4 0 018 0m-4 8v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2z"></path></svg>'
                             }
                         </button>
-                        <button class="action-button delete" title="Excluir usuário" data-user-id="${user.id}" data-user-name="${user.name}">
+                        <button onclick="deleteUser('${user.id}', '${user.name.replace(/'/g, "\\'").replace(/"/g, '\\"')}')" class="action-button delete" title="Excluir usuário">
                             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path>
                             </svg>
@@ -3971,61 +4153,101 @@ window.testUserBlocking = testUserBlocking;
 // Variável para armazenar dados do usuário a ser excluído
 let userToDelete = null;
 
-// Function to delete user (abre modal de confirmação)
+// Function to delete user (usa confirm simples)
 function deleteUser(userId, userName) {
-    userToDelete = { id: userId, name: userName };
-    document.getElementById('deleteUserName').textContent = userName;
-    const modal = document.getElementById('deleteUserModal');
-    if (modal) {
-        modal.classList.remove('hidden');
-        modal.classList.add('flex');
-    }
-}
-
-// Function to close delete confirmation modal
-function closeDeleteUserModal() {
-    userToDelete = null;
-    const modal = document.getElementById('deleteUserModal');
-    if (modal) {
-        modal.classList.remove('flex');
-        modal.classList.add('hidden');
-    }
-}
-
-
-
-// Function to confirm user deletion
-async function confirmDeleteUser() {
-    if (!userToDelete) {
-        console.log('confirmDeleteUser: userToDelete is null or undefined');
+    // Verificar se os parâmetros são válidos
+    if (!userId || !userName) {
+        console.error('deleteUser: Parâmetros inválidos', { userId, userName });
         return;
     }
     
-    console.log('confirmDeleteUser: Attempting to delete user:', userToDelete);
+    // Verificar se não é uma chamada acidental
+    if (typeof userId !== 'string' || typeof userName !== 'string') {
+        console.error('deleteUser: Tipos de parâmetros inválidos', { userId: typeof userId, userName: typeof userName });
+        return;
+    }
     
+    // Verificar se não é uma chamada automática (deve ser chamada por clique do usuário)
+    if (!event || !event.isTrusted) {
+        console.error('deleteUser: Chamada não autorizada - deve ser iniciada por clique do usuário');
+        return;
+    }
+    
+    // Verificação adicional: garantir que não é uma chamada automática
+    const stack = new Error().stack;
+    if (stack && (stack.includes('setTimeout') || stack.includes('setInterval') || stack.includes('Promise'))) {
+        console.error('deleteUser: Chamada automática detectada, bloqueando');
+        return;
+    }
+    
+    // Usar confirm simples em vez do modal
+    const confirmed = confirm(`Tem certeza que deseja excluir o usuário "${userName}"?\n\nEsta ação não pode ser desfeita.`);
+    
+    if (confirmed) {
+        console.log('Usuário confirmou exclusão:', userName);
+        // Executar exclusão diretamente
+        executeDeleteUser(userId, userName);
+    } else {
+        console.log('Usuário cancelou exclusão');
+    }
+}
+
+// Função para executar a exclusão
+async function executeDeleteUser(userId, userName) {
     try {
+        console.log('Executando exclusão do usuário:', userName);
+        
         const { data, error } = await supabase
             .from('users')
             .delete()
-            .eq('id', userToDelete.id);
+            .eq('id', userId);
             
-        console.log('confirmDeleteUser: Delete response:', { data, error });
-        
         if (error) {
-            console.error('confirmDeleteUser: Supabase error:', error);
-            throw error;
+            console.error('Erro ao excluir usuário:', error);
+            showNotification('Erro ao excluir usuário: ' + error.message, 'error');
+            return;
         }
         
-        console.log('confirmDeleteUser: User deleted successfully');
-        showNotification(`Usuário "${userToDelete.name}" excluído com sucesso!`, 'success');
-        closeDeleteUserModal();
+        console.log('Usuário excluído com sucesso');
+        showNotification(`Usuário "${userName}" excluído com sucesso!`, 'success');
         await loadUsersData(); // Reload users list
         
     } catch (error) {
-        console.error('confirmDeleteUser: Caught error:', error);
-        showNotification('Erro ao excluir usuário: ' + (error.message || error), 'error');
-        closeDeleteUserModal();
+        console.error('Erro ao excluir usuário:', error);
+        showNotification('Erro ao excluir usuário: ' + error.message, 'error');
     }
+}
+
+// Function to close delete confirmation modal (não mais necessária)
+function closeDeleteUserModal() {
+    console.log('Função closeDeleteUserModal não é mais necessária - usando confirm simples');
+}
+
+// Adicionar listener para fechar modal com ESC
+document.addEventListener('keydown', function(event) {
+    if (event.key === 'Escape') {
+        const deleteModal = document.getElementById('deleteUserModal');
+        if (deleteModal && !deleteModal.classList.contains('hidden')) {
+            closeDeleteUserModal();
+            console.log('Modal de exclusão fechado com ESC');
+        }
+    }
+});
+
+// Prevenir abertura acidental do modal
+window.addEventListener('error', function(event) {
+    const deleteModal = document.getElementById('deleteUserModal');
+    if (deleteModal && !deleteModal.classList.contains('hidden')) {
+        deleteModal.classList.add('hidden');
+        console.log('Modal fechado devido a erro JavaScript:', event.error);
+    }
+});
+
+
+
+// Function to confirm user deletion (não mais necessária)
+async function confirmDeleteUser() {
+    console.log('Função confirmDeleteUser não é mais necessária - usando confirm simples');
 }
 // Function to handle edit user form submission
 async function handleEditUser(e) {
@@ -4453,8 +4675,8 @@ function displayQualityTests(tests) {
         const testDate = new Date(test.test_date).toLocaleDateString('pt-BR');
         const fatPercentage = test.fat_percentage ? `${test.fat_percentage.toFixed(1)}%` : '--';
         const proteinPercentage = test.protein_percentage ? `${test.protein_percentage.toFixed(1)}%` : '--';
-        const sccCount = test.somatic_cell_count ? `${Math.round(test.somatic_cell_count / 1000)}k` : '--';
-        const tbcCount = test.total_bacterial_count ? `${Math.round(test.total_bacterial_count / 1000)}k` : '--';
+                        const sccCount = test.scc ? `${Math.round(test.scc / 1000)}k` : '--';
+                        const tbcCount = test.cbt ? `${Math.round(test.cbt / 1000)}k` : '--';
         const laboratory = test.laboratory || '--';
         
         // Determine quality grade based on values
@@ -4462,13 +4684,13 @@ function displayQualityTests(tests) {
         let gradeColor = 'bg-green-100 text-green-800';
         
         if (test.fat_percentage < 3.0 || test.protein_percentage < 2.9 || 
-            (test.somatic_cell_count && test.somatic_cell_count > 400000) ||
-            (test.total_bacterial_count && test.total_bacterial_count > 100000)) {
+                            (test.scc && test.scc > 400000) ||
+                            (test.cbt && test.cbt > 100000)) {
             qualityGrade = 'C';
             gradeColor = 'bg-red-100 text-red-800';
         } else if (test.fat_percentage < 3.5 || test.protein_percentage < 3.2 ||
-                   (test.somatic_cell_count && test.somatic_cell_count > 200000) ||
-                   (test.total_bacterial_count && test.total_bacterial_count > 50000)) {
+                   (test.scc && test.scc > 200000) ||
+                   (test.cbt && test.cbt > 50000)) {
             qualityGrade = 'B';
             gradeColor = 'bg-yellow-100 text-yellow-800';
         }
@@ -4866,7 +5088,7 @@ function updateQualityCharts(qualityData) {
     if (qualityDistributionChart && qualityData.length > 0) {
         const avgFat = qualityData.reduce((sum, record) => sum + (record.fat_percentage || 0), 0) / qualityData.length;
         const avgProtein = qualityData.reduce((sum, record) => sum + (record.protein_percentage || 0), 0) / qualityData.length;
-        const avgSCC = qualityData.reduce((sum, record) => sum + (record.somatic_cell_count || 0), 0) / qualityData.length;
+                        const avgSCC = qualityData.reduce((sum, record) => sum + (record.scc || 0), 0) / qualityData.length;
         
         // Classify quality based on standards
         const fatQuality = avgFat >= 3.5 ? 'Excelente' : avgFat >= 3.0 ? 'Bom' : 'Regular';
@@ -5499,15 +5721,11 @@ function hideNotification() {
 
 // Profile modal functions
 function openProfileModal() {
-    const el = document.getElementById('profileModal');
-    if (!el) return;
-    el.classList.add('show');
+    document.getElementById('profileModal').classList.add('show');
 }
 
 function closeProfileModal() {
-    const el = document.getElementById('profileModal');
-    if (!el) return;
-    el.classList.remove('show');
+    document.getElementById('profileModal').classList.remove('show');
 }
 
 // Profile edit functions
@@ -5764,7 +5982,7 @@ function addQualityTest() {
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700    mb-2">CCS (mil/mL)</label>
-                        <input type="number" name="somatic_cell_count" min="0" required class="w-full px-3 py-2 border border-gray-300    rounded-lg focus:ring-2 focus:ring-forest-500 focus:border-transparent      " placeholder="200">
+                        <input type="number" name="scc" min="0" required class="w-full px-3 py-2 border border-gray-300    rounded-lg focus:ring-2 focus:ring-forest-500 focus:border-transparent      " placeholder="200">
                     </div>
                     <div>
                         <label class="block text-sm font-medium text-gray-700    mb-2">CBT (mil/mL)</label>
@@ -5971,8 +6189,8 @@ async function handleAddQuality(event) {
         test_date: formData.get('test_date'),
         fat_percentage: parseFloat(formData.get('fat_percentage')),
         protein_percentage: parseFloat(formData.get('protein_percentage')),
-        somatic_cell_count: parseInt(formData.get('somatic_cell_count')),
-        total_bacterial_count: parseInt(formData.get('total_bacterial_count')),
+                        scc: parseInt(formData.get('scc')),
+                        cbt: parseInt(formData.get('total_bacterial_count')),
         laboratory: formData.get('laboratory') || null,
         notes: formData.get('notes') || null
     };
@@ -5999,8 +6217,8 @@ async function handleAddQuality(event) {
                 test_date: qualityData.test_date,
                 fat_percentage: qualityData.fat_percentage,
                 protein_percentage: qualityData.protein_percentage,
-                somatic_cell_count: qualityData.somatic_cell_count,
-                total_bacterial_count: qualityData.total_bacterial_count,
+                scc: qualityData.scc,
+                cbt: qualityData.cbt,
                 laboratory: qualityData.laboratory,
                 notes: qualityData.notes,
                 created_at: new Date().toISOString()
@@ -6039,17 +6257,11 @@ async function handleAddPayment(event) {
     const formData = new FormData(event.target);
     
     const paymentData = {
-        payment_date: formData.get('due_date'), // Data da venda
-        reference_period_start: formData.get('due_date'), // Período de referência início
-        reference_period_end: formData.get('due_date'), // Período de referência fim
-        volume_liters: 1000, // Volume padrão (pode ser ajustado depois)
-        base_price_per_liter: parseFloat(formData.get('amount')) / 1000, // Preço base por litro
-        quality_bonus: 0, // Bônus de qualidade padrão
-        deductions: 0, // Deduções padrão
-        gross_amount: parseFloat(formData.get('amount')), // Valor bruto
-        net_amount: parseFloat(formData.get('amount')), // Valor líquido
-        payment_status: formData.get('status') === 'completed' ? 'pago' : formData.get('status') === 'pending' ? 'pendente' : 'pendente', // Status do pagamento
-        notes: `${formData.get('description')} - Tipo: ${formData.get('payment_type')}${formData.get('notes') ? ' - ' + formData.get('notes') : ''}` // Notas combinadas
+        record_date: formData.get('due_date'), // Data do registro
+        type: 'receita', // Tipo de registro financeiro
+        amount: parseFloat(formData.get('amount')), // Valor
+        description: `${formData.get('description')} - Tipo: ${formData.get('payment_type')}${formData.get('notes') ? ' - ' + formData.get('notes') : ''}`, // Descrição
+        category: formData.get('payment_type') || 'venda_leite' // Categoria
     };
 
     try {
@@ -6066,12 +6278,13 @@ async function handleAddPayment(event) {
         if (managerError) throw managerError;
         if (!managerData?.farm_id) throw new Error('Farm not found');
 
-        // Insert payment into database
+        // Insert financial record into database
         const { error: paymentError } = await supabase
-            .from('payments')
+            .from('financial_records')
             .insert({
                 ...paymentData,
-                farm_id: managerData.farm_id
+                farm_id: managerData.farm_id,
+                type: 'receita'
             });
 
         if (paymentError) throw paymentError;
@@ -6600,9 +6813,10 @@ async function generatePaymentsReport() {
 
         // Buscar dados de vendas
         const { data: salesData, error } = await supabase
-            .from('payments')
+            .from('financial_records')
             .select('*')
             .eq('farm_id', userData.farm_id)
+            .eq('type', 'receita')
             .order('created_at', { ascending: false });
 
         if (error) throw error;
@@ -7468,14 +7682,14 @@ async function saveSecondaryAccount(event) {
                             }
                         ]);
                         
-                    if (relationError) {
-                        console.error('Erro ao criar relação de conta secundária:', relationError);
-                    }
-                }
-            }
-        }
-        
-        // Atualizar a interface e sair da função com verificações de segurança
+                                         if (relationError) {
+                         console.error('Erro ao criar relação de conta secundária:', relationError);
+                     }
+                 }
+             }
+         }
+         
+         // Atualizar a interface e sair da função com verificações de segurança
         const noSecondaryAccount = document.getElementById('noSecondaryAccount');
         const hasSecondaryAccount = document.getElementById('hasSecondaryAccount');
         const secondaryAccountNameDisplay = document.getElementById('secondaryAccountNameDisplay');
@@ -8964,6 +9178,341 @@ async function exportPDFReport() {
 }
 
 
+
+// ===== FUNÇÕES DE CONTAS SECUNDÁRIAS =====
+
+// Toggle do formulário de conta secundária
+function toggleSecondaryAccountForm() {
+    const form = document.getElementById('secondaryAccountForm');
+    const isHidden = form.classList.contains('hidden');
+    
+    if (isHidden) {
+        form.classList.remove('hidden');
+        // Preencher campos com dados do gerente atual
+        fillManagerDataInForm();
+    } else {
+        form.classList.add('hidden');
+        document.getElementById('createSecondaryAccountForm').reset();
+    }
+}
+
+// Cancelar formulário de conta secundária
+function cancelSecondaryAccountForm() {
+    document.getElementById('secondaryAccountForm').classList.add('hidden');
+    document.getElementById('createSecondaryAccountForm').reset();
+}
+
+// Preencher formulário com dados do gerente
+async function fillManagerDataInForm() {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        const { data: userData } = await supabase
+            .from('users')
+            .select('name, whatsapp')
+            .eq('id', user.id)
+            .single();
+
+        if (userData) {
+            document.getElementById('secondaryAccountName').value = userData.name || '';
+            document.getElementById('secondaryAccountWhatsApp').value = userData.whatsapp || '';
+        }
+    } catch (error) {
+        console.error('Erro ao carregar dados do gerente:', error);
+    }
+}
+
+// Carregar lista de contas secundárias
+async function loadSecondaryAccounts() {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) return;
+
+        // Buscar dados do gerente para obter o farm_id
+        const { data: managerData } = await supabase
+            .from('users')
+            .select('farm_id')
+            .eq('id', user.id)
+            .single();
+
+        if (!managerData?.farm_id) return;
+
+        // Buscar contas secundárias da mesma fazenda
+        const { data: secondaryAccounts } = await supabase
+            .from('users')
+            .select('id, name, email, role, created_at, is_active')
+            .eq('farm_id', managerData.farm_id)
+            .neq('id', user.id) // Excluir o próprio gerente
+            .in('role', ['funcionario', 'veterinario'])
+            .order('created_at', { ascending: false });
+
+        const container = document.getElementById('secondaryAccountsList');
+        if (!container) return;
+
+        if (!secondaryAccounts || secondaryAccounts.length === 0) {
+            container.innerHTML = `
+                <div class="text-center py-6 text-gray-500">
+                    <svg class="w-12 h-12 mx-auto mb-3 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM9 3a2 2 0 11-4 0 2 2 0 014 0z"></path>
+                    </svg>
+                    <p class="text-sm">Nenhuma conta secundária criada</p>
+                </div>
+            `;
+            return;
+        }
+
+        container.innerHTML = secondaryAccounts.map(account => {
+            const roleLabel = account.role === 'funcionario' ? 'Funcionário' : 'Veterinário';
+            const roleColor = account.role === 'funcionario' ? 'bg-blue-100 text-blue-800' : 'bg-green-100 text-green-800';
+            const statusColor = account.is_active ? 'bg-green-100 text-green-800' : 'bg-red-100 text-red-800';
+            const statusLabel = account.is_active ? 'Ativa' : 'Inativa';
+            const createdDate = new Date(account.created_at).toLocaleDateString('pt-BR');
+
+            return `
+                <div class="flex items-center justify-between p-4 border border-gray-200 rounded-xl hover:shadow-sm transition-all">
+                    <div class="flex-1">
+                        <div class="flex items-center gap-3 mb-2">
+                            <h5 class="font-semibold text-gray-900">${account.name}</h5>
+                            <span class="px-2 py-1 text-xs font-medium rounded-full ${roleColor}">${roleLabel}</span>
+                            <span class="px-2 py-1 text-xs font-medium rounded-full ${statusColor}">${statusLabel}</span>
+                        </div>
+                        <div class="text-sm text-gray-600">
+                            <p><strong>Email:</strong> ${account.email}</p>
+                            <p><strong>Criada em:</strong> ${createdDate}</p>
+                        </div>
+                    </div>
+                    <div class="flex gap-2">
+                        <button onclick="toggleAccountStatus('${account.id}', ${!account.is_active})" 
+                                class="px-3 py-1 text-xs font-medium rounded-lg transition-all ${
+                                    account.is_active 
+                                        ? 'bg-red-100 text-red-700 hover:bg-red-200' 
+                                        : 'bg-green-100 text-green-700 hover:bg-green-200'
+                                }">
+                            ${account.is_active ? 'Desativar' : 'Ativar'}
+                        </button>
+                        <button onclick="resetAccountPassword('${account.id}', '${account.name}')" 
+                                class="px-3 py-1 text-xs font-medium bg-yellow-100 text-yellow-700 hover:bg-yellow-200 rounded-lg transition-all">
+                            Resetar Senha
+                        </button>
+                    </div>
+                </div>
+            `;
+        }).join('');
+
+    } catch (error) {
+        console.error('Erro ao carregar contas secundárias:', error);
+        showNotification('Erro ao carregar contas secundárias', 'error');
+    }
+}
+
+// Criar nova conta secundária
+async function createSecondaryAccount(formData) {
+    try {
+        const { data: { user } } = await supabase.auth.getUser();
+        if (!user) throw new Error('Usuário não autenticado');
+
+        // Buscar dados do gerente
+        const { data: managerData } = await supabase
+            .from('users')
+            .select('farm_id')
+            .eq('id', user.id)
+            .single();
+
+        if (!managerData?.farm_id) {
+            throw new Error('Fazenda não encontrada');
+        }
+
+        // Gerar senha temporária
+        const tempPassword = generateTempPassword();
+
+        // Criar usuário no Supabase Auth
+        const { data: authData, error: authError } = await supabase.auth.signUp({
+            email: formData.email,
+            password: tempPassword,
+            options: {
+                data: {
+                    name: formData.name,
+                    role: formData.account_type,
+                    whatsapp: formData.whatsapp,
+                    farm_name: sessionStorage.getItem('farm_name') || 'Minha Fazenda'
+                },
+                emailRedirectTo: undefined // Disable email confirmation
+            }
+        });
+
+        if (authError) throw authError;
+        if (!authData.user) throw new Error('Falha ao criar usuário');
+
+        // Inserir dados na tabela users usando RPC
+        const { error: insertError } = await supabase
+            .rpc('create_secondary_user', {
+                p_user_id: authData.user.id,
+                p_farm_id: managerData.farm_id,
+                p_name: formData.name,
+                p_email: formData.email,
+                p_role: formData.account_type,
+                p_whatsapp: formData.whatsapp || '',
+                p_created_by: user.id,
+                p_temp_password: tempPassword
+            });
+
+        if (insertError) throw insertError;
+
+        showNotification(`Conta ${formData.account_type} criada com sucesso!\nSenha temporária: ${tempPassword}`, 'success');
+        
+        // Resetar formulário e recarregar lista
+        document.getElementById('createSecondaryAccountForm').reset();
+        document.getElementById('secondaryAccountForm').classList.add('hidden');
+        await loadSecondaryAccounts();
+
+        // Mostrar modal com senha temporária
+        showTempPasswordModal(formData.name, formData.email, tempPassword);
+
+    } catch (error) {
+        console.error('Erro ao criar conta secundária:', error);
+        showNotification('Erro ao criar conta: ' + error.message, 'error');
+    }
+}
+
+// Gerar senha temporária
+function generateTempPassword() {
+    const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZabcdefghijkmnpqrstuvwxyz23456789';
+    let password = '';
+    for (let i = 0; i < 8; i++) {
+        password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    return password;
+}
+
+// Mostrar modal com senha temporária
+function showTempPasswordModal(name, email, password) {
+    const modal = document.createElement('div');
+    modal.className = 'fixed inset-0 bg-black bg-opacity-60 flex items-center justify-center z-[10000] backdrop-blur-sm';
+    modal.innerHTML = `
+        <div class="bg-white rounded-2xl p-8 max-w-md w-full mx-4 shadow-2xl">
+            <div class="text-center mb-6">
+                <div class="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
+                    <svg class="w-8 h-8 text-green-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h3 class="text-xl font-bold text-gray-800 mb-2">Conta Criada com Sucesso!</h3>
+                <p class="text-sm text-gray-500">Anote a senha temporária</p>
+            </div>
+            
+            <div class="bg-gray-50 rounded-xl p-4 mb-6">
+                <div class="space-y-2">
+                    <div><strong>Nome:</strong> ${name}</div>
+                    <div><strong>Email:</strong> ${email}</div>
+                    <div class="flex items-center justify-between">
+                        <strong>Senha Temporária:</strong>
+                        <div class="flex items-center gap-2">
+                            <code class="bg-white px-2 py-1 rounded border font-mono text-lg">${password}</code>
+                            <button onclick="copyToClipboard('${password}')" class="p-1 text-gray-500 hover:text-gray-700">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z"></path>
+                                </svg>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="bg-yellow-50 border border-yellow-200 rounded-xl p-4 mb-6">
+                <div class="flex items-start">
+                    <svg class="w-5 h-5 text-yellow-600 mt-0.5 mr-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.34 16.5c-.77.833.192 2.5 1.732 2.5z"></path>
+                    </svg>
+                    <div>
+                        <h5 class="text-sm font-semibold text-yellow-800 mb-1">Importante!</h5>
+                        <p class="text-sm text-yellow-700">O usuário deverá alterar esta senha no primeiro acesso ao sistema.</p>
+                    </div>
+                </div>
+            </div>
+            
+            <button onclick="this.closest('.fixed').remove()" class="w-full px-6 py-3 bg-forest-600 text-white rounded-xl hover:bg-forest-700 transition-all font-medium">
+                Entendi
+            </button>
+        </div>
+    `;
+    document.body.appendChild(modal);
+}
+
+// Copiar para clipboard
+function copyToClipboard(text) {
+    navigator.clipboard.writeText(text).then(() => {
+        showNotification('Senha copiada para a área de transferência!', 'success');
+    }).catch(() => {
+        showNotification('Erro ao copiar senha', 'error');
+    });
+}
+
+// Alternar status da conta
+async function toggleAccountStatus(userId, newStatus) {
+    try {
+        const { error } = await supabase
+            .from('users')
+            .update({ is_active: newStatus })
+            .eq('id', userId);
+
+        if (error) throw error;
+
+        showNotification(`Conta ${newStatus ? 'ativada' : 'desativada'} com sucesso!`, 'success');
+        await loadSecondaryAccounts();
+
+    } catch (error) {
+        console.error('Erro ao alterar status da conta:', error);
+        showNotification('Erro ao alterar status da conta', 'error');
+    }
+}
+
+// Resetar senha da conta
+async function resetAccountPassword(userId, userName) {
+    if (!confirm(`Tem certeza que deseja resetar a senha de ${userName}?`)) {
+        return;
+    }
+
+    try {
+        const newPassword = generateTempPassword();
+
+        // Atualizar apenas a senha temporária na tabela
+        // Nota: O usuário precisará usar a função de recuperação de senha do Supabase
+        // ou o administrador do sistema precisará resetar via painel admin
+        const { error: updateError } = await supabase
+            .from('users')
+            .update({ temp_password: newPassword })
+            .eq('id', userId);
+
+        if (updateError) throw updateError;
+
+        showNotification('Nova senha temporária gerada! O usuário deve usar a recuperação de senha do sistema.', 'warning');
+        showTempPasswordModal(userName, '', newPassword);
+
+    } catch (error) {
+        console.error('Erro ao resetar senha:', error);
+        showNotification('Erro ao resetar senha: ' + error.message, 'error');
+    }
+}
+
+// Event listener para formulário de conta secundária
+document.getElementById('createSecondaryAccountForm')?.addEventListener('submit', async function(e) {
+    e.preventDefault();
+    const formData = new FormData(this);
+    const data = Object.fromEntries(formData.entries());
+    await createSecondaryAccount(data);
+});
+
+// Carregar contas secundárias quando o modal for aberto
+// (A função já foi modificada anteriormente para carregar foto do gerente)
+// Agora vamos adicionar a funcionalidade de carregar contas secundárias
+const currentOpenProfileModal = window.openProfileModal;
+window.openProfileModal = function() {
+    currentOpenProfileModal();
+    setTimeout(() => {
+        loadSecondaryAccounts();
+    }, 100);
+};
 
 // Função para prévia do relatório na aba
 function previewReportTab() {

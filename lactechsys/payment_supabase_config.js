@@ -3,8 +3,8 @@
 // =====================================================
 
 // Configurações do Supabase
-const SUPABASE_URL = 'https://rvvydklrtcabdwixkjiz.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InJ2dnlka2xydGNhYmR3aXhraml6Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ1Mjk5NzksImV4cCI6MjA3MDEwNTk3OX0.dWm2zfFXdHAxiTP-iKbck-1hwDSoiCNK42R6lQxxxRQ';
+const SUPABASE_URL = 'https://njnusdzwvxpsxhcspsop.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qbnVzZHp3dnhwc3hoY3Nwc29wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4NTY2MjIsImV4cCI6MjA3MDQzMjYyMn0.fmOK6xVEECzQmjTQAUm3Ct0UkNXirabMLlM96wnAQOk';
 
 // Inicializar cliente Supabase
 let paymentSupabase;

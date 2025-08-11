@@ -1,8 +1,8 @@
 // LacTech - Configuração do Supabase
 
 // Credenciais do Supabase
-const SUPABASE_URL = 'https://nsmlbgqebwnqmyajczmd.supabase.co';
-const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5zbWxiZ3FlYnducW15YWpjem1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyMjgwMjgsImV4cCI6MjA2OTgwNDAyOH0.gLt4sTWqJ79g6mEtSiJ0xhzYXf_csvvw_E5vO4O-ZPI';
+const SUPABASE_URL = 'https://njnusdzwvxpsxhcspsop.supabase.co';
+const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qbnVzZHp3dnhwc3hoY3Nwc29wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4NTY2MjIsImV4cCI6MjA3MDQzMjYyMn0.fmOK6xVEECzQmjTQAUm3Ct0UkNXirabMLlM96wnAQOk';
 
 // Inicialização do cliente Supabase
 const supabase = supabaseJs.createClient(SUPABASE_URL, SUPABASE_KEY);

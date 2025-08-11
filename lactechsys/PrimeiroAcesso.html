@@ -6,13 +6,7 @@
     <title>Configuração da Fazenda - Sistema de Controle Leiteiro</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        // NOVO SUPABASE - Credenciais atualizadas  
-        const supabase = window.supabase.createClient(
-            'https://mauioyodoxmuzqweaasc.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1hdWlveW9kb3htdXpxd2VhYXNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ3NzYyNzksImV4cCI6MjA3MDM1MjI3OX0.m2nZ_5Vbi9aBz1vZ_oA-JHsd_yqD9brJXjnr39k7Ajc'
-        );
-    </script>
+    <script src="supabase_config_fixed.js"></script>
     <link rel="icon" href="https://i.postimg.cc/vmrkgDcB/lactech.png" type="image/x-icon">
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <script>
@@ -135,12 +129,16 @@
                 </div>
                 <div id="progress2" class="w-16 h-1 bg-gray-300 rounded"></div>
                 <div id="step3" class="step-indicator rounded-full w-10 h-10 flex items-center justify-center font-bold text-sm">
-                    3
-                </div>
+                3
             </div>
-            <div class="flex justify-center mt-2">
-                <div class="text-center">
-                    <p id="stepTitle" class="text-sm font-semibold text-forest-600">Passo 1 de 3</p>
+            <div id="progress3" class="w-16 h-1 bg-gray-300 rounded"></div>
+            <div id="step4" class="step-indicator rounded-full w-10 h-10 flex items-center justify-center font-bold text-sm">
+                4
+            </div>
+        </div>
+        <div class="flex justify-center mt-2">
+            <div class="text-center">
+                <p id="stepTitle" class="text-sm font-semibold text-forest-600">Passo 1 de 4</p>
                     <p id="stepSubtitle" class="text-xs text-gray-500">Informações da Fazenda</p>
                 </div>
             </div>
@@ -223,23 +221,7 @@
                     </div>
                 </div>
 
-                <!-- Informações do Rebanho -->
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Número de Animais *</label>
-                        <input type="number" required name="animal_count" min="1" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none" placeholder="Ex: 150">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Produção Diária (L)</label>
-                        <input type="number" name="daily_production" min="0" step="0.01" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none" placeholder="Ex: 1500">
-                    </div>
-                    
-                    <div>
-                        <label class="block text-sm font-semibold text-gray-700 mb-2">Área Total (hectares)</label>
-                        <input type="number" name="total_area" min="0" step="0.01" class="w-full px-4 py-3 border border-gray-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none" placeholder="Ex: 50">
-                    </div>
-                </div>
+
 
                 <!-- Contato -->
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -356,13 +338,81 @@
                         Voltar
                     </button>
                     <button type="submit" id="adminSubmitBtn" class="flex-1 px-6 py-3 gradient-forest text-white font-semibold rounded-xl hover:shadow-lg transition-all">
-                        Finalizar Configuração
+                        Continuar
                     </button>
                 </div>
             </form>
         </div>
 
-        <!-- Step 3: Success -->
+        <!-- Step 3: Confirmation -->
+        <div id="confirmationStep" class="setup-card rounded-2xl p-8 shadow-xl hidden">
+            <div class="text-center mb-8">
+                <div class="w-20 h-20 bg-blue-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
+                    <svg class="w-10 h-10 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                    </svg>
+                </div>
+                <h2 class="text-3xl font-bold text-gray-900 mb-2">Confirmar Configuração</h2>
+                <p class="text-gray-600 text-lg">Revise os dados antes de finalizar</p>
+            </div>
+
+            <!-- Resumo da Configuração -->
+            <div class="space-y-6">
+                <div class="bg-blue-50 border border-blue-200 rounded-xl p-6">
+                    <h3 class="text-lg font-semibold text-blue-800 mb-4">Dados da Fazenda</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <p class="text-blue-700 font-medium">Fazenda:</p>
+                            <p id="confirmFarmName" class="text-blue-600"></p>
+                        </div>
+                        <div>
+                            <p class="text-blue-700 font-medium">Proprietário:</p>
+                            <p id="confirmOwnerName" class="text-blue-600"></p>
+                        </div>
+                        <div>
+                            <p class="text-blue-700 font-medium">Localização:</p>
+                            <p id="confirmLocation" class="text-blue-600"></p>
+                        </div>
+                        <div>
+                            <p class="text-blue-700 font-medium">CPF/CNPJ:</p>
+                            <p id="confirmDocument" class="text-blue-600"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-green-50 border border-green-200 rounded-xl p-6">
+                    <h3 class="text-lg font-semibold text-green-800 mb-4">Dados do Administrador</h3>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
+                        <div>
+                            <p class="text-green-700 font-medium">Nome:</p>
+                            <p id="confirmAdminName" class="text-green-600"></p>
+                        </div>
+                        <div>
+                            <p class="text-green-700 font-medium">Email:</p>
+                            <p id="confirmAdminEmail" class="text-green-600"></p>
+                        </div>
+                        <div>
+                            <p class="text-green-700 font-medium">Tipo:</p>
+                            <p id="confirmAdminRole" class="text-green-600"></p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Botões -->
+                <div class="flex space-x-4 pt-6">
+                    <button type="button" onclick="goToStep2()" class="flex-1 px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all">
+                        Voltar
+                    </button>
+                    <button type="button" onclick="finalizeSetup()" id="finalizeBtn" class="flex-1 px-6 py-3 gradient-forest text-white font-semibold rounded-xl hover:shadow-lg transition-all">
+                        Finalizar Configuração
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Step 4: Success -->
         <div id="successStep" class="setup-card rounded-2xl p-8 shadow-xl hidden">
             <div class="text-center mb-8">
                 <div class="w-20 h-20 bg-green-500 rounded-2xl flex items-center justify-center mx-auto mb-4 shadow-lg">
@@ -392,10 +442,7 @@
                             <p class="text-green-700 font-medium">Localização:</p>
                             <p id="summaryLocation" class="text-green-600"></p>
                         </div>
-                        <div>
-                            <p class="text-green-700 font-medium">Animais:</p>
-                            <p id="summaryAnimals" class="text-green-600"></p>
-                        </div>
+
                         <div>
                             <p class="text-green-700 font-medium">Administrador:</p>
                             <p id="summaryAdminName" class="text-green-600"></p>
@@ -487,6 +534,7 @@
 
         let farmData = {};
         let adminData = {};
+        let isProcessing = false; // Flag para evitar múltiplas submissões
 
         // Utility functions
         function showError(message) {
@@ -585,16 +633,20 @@
                     cnpj: document || null,
                     city: formData.get('city'),
                     state: formData.get('state'),
-                    animal_count: parseInt(formData.get('animal_count')) || 0,
-                    daily_production: parseFloat(formData.get('daily_production')) || 0,
-                    total_area_hectares: parseFloat(formData.get('total_area')) || null,
                     phone: formData.get('phone'),
                     email: formData.get('email'),
                     address: formData.get('address') || null
                 };
                 
-                // Validação simples - banco novo
-                console.log('Validando fazenda:', farmData.name);
+                // Check if farm with same name or CNPJ exists using secure RPC
+                const { data: exists, error } = await supabase
+                    .rpc('check_farm_exists', { p_name: farmData.name, p_cnpj: farmData.cnpj });
+                
+                if (error) throw error;
+                
+                if (exists) {
+                    throw new Error('Já existe uma fazenda com este nome ou CNPJ');
+                }
                 showSuccess('Informações da fazenda validadas com sucesso!');
                 goToStep2();
                 
@@ -606,7 +658,7 @@
             }
         });
 
-        // Step 2: Admin Form
+        // Step 2: Admin Form (apenas validação)
         document.getElementById('adminForm').addEventListener('submit', async function(e) {
             e.preventDefault();
             setLoading('adminSubmitBtn', true);
@@ -644,80 +696,7 @@
                     throw new Error('Já existe um usuário com este email');
                 }
                 
-                // Create user account in Supabase Auth with email confirmation disabled
-                const { data: authUser, error: authError } = await supabase.auth.signUp({
-                    email: adminData.email,
-                    password: adminData.password,
-                    options: {
-                        emailRedirectTo: undefined, // Disable email confirmation
-                        data: {
-                            name: adminData.name,
-                            role: adminData.role
-                        }
-                    }
-                });
-                
-                if (authError) throw authError;
-                
-                // Create farm using secure RPC
-                const { data: farmId, error: farmError } = await supabase
-                    .rpc('create_initial_farm', {
-                        p_name: farmData.name,
-                        p_owner_name: farmData.owner_name,
-                        p_cnpj: farmData.cnpj || '',
-                        p_city: farmData.city,
-                        p_state: farmData.state,
-                        p_animal_count: farmData.animal_count,
-                        p_daily_production: farmData.daily_production,
-                        p_total_area_hectares: farmData.total_area_hectares,
-                        p_phone: farmData.phone,
-                        p_email: farmData.email,
-                        p_address: farmData.address || ''
-                    });
-                
-                if (farmError) throw farmError;
-                
-                // Create user record using RPC function
-                const { error: userError } = await supabase
-                    .rpc('create_initial_user', {
-                        p_user_id: authUser.user.id,
-                        p_farm_id: farmId,
-                        p_name: adminData.name,
-                        p_email: adminData.email,
-                        p_role: adminData.role,
-                        p_whatsapp: adminData.whatsapp
-                    });
-                
-                if (userError) throw userError;
-                
-                // Mark farm setup as completed using RPC function
-                const { error: updateError } = await supabase
-                    .rpc('complete_farm_setup', {
-                        p_farm_id: farmId
-                    });
-                
-                if (updateError) throw updateError;
-                
-                // Store farm ID for summary
-                farmData.id = farmId;
-                
-                // Auto-login the user after successful registration
-                try {
-                    const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
-                        email: adminData.email,
-                        password: adminData.password
-                    });
-                    
-                    if (loginError) {
-                        console.log('Auto-login failed, but registration was successful:', loginError);
-                    } else {
-                        console.log('Auto-login successful!');
-                    }
-                } catch (loginError) {
-                    console.log('Auto-login attempt failed:', loginError);
-                }
-                
-                showSuccess('Fazenda e administrador criados com sucesso!');
+                showSuccess('Dados do administrador validados com sucesso!');
                 goToStep3();
                 
             } catch (error) {
@@ -749,10 +728,22 @@
         function goToStep3() {
             document.getElementById('farmInfoStep').classList.add('hidden');
             document.getElementById('adminStep').classList.add('hidden');
-            document.getElementById('successStep').classList.remove('hidden');
+            document.getElementById('confirmationStep').classList.remove('hidden');
+            document.getElementById('successStep').classList.add('hidden');
             document.getElementById('featuresPreview').classList.add('hidden');
             
             updateStepIndicator(3);
+            updateConfirmationData();
+        }
+
+        function goToStep4() {
+            document.getElementById('farmInfoStep').classList.add('hidden');
+            document.getElementById('adminStep').classList.add('hidden');
+            document.getElementById('confirmationStep').classList.add('hidden');
+            document.getElementById('successStep').classList.remove('hidden');
+            document.getElementById('featuresPreview').classList.add('hidden');
+            
+            updateStepIndicator(4);
             updateSummary();
             
             // Auto-redirect after 3 seconds
@@ -766,10 +757,12 @@
             document.getElementById('step1').className = 'step-indicator rounded-full w-10 h-10 flex items-center justify-center font-bold text-sm';
             document.getElementById('step2').className = 'step-indicator rounded-full w-10 h-10 flex items-center justify-center font-bold text-sm';
             document.getElementById('step3').className = 'step-indicator rounded-full w-10 h-10 flex items-center justify-center font-bold text-sm';
+            document.getElementById('step4').className = 'step-indicator rounded-full w-10 h-10 flex items-center justify-center font-bold text-sm';
             
             // Update progress bars
             document.getElementById('progress1').className = 'w-16 h-1 bg-gray-300 rounded';
             document.getElementById('progress2').className = 'w-16 h-1 bg-gray-300 rounded';
+            document.getElementById('progress3').className = 'w-16 h-1 bg-gray-300 rounded';
             
             // Set current and completed steps
             if (currentStep >= 1) {
@@ -780,26 +773,196 @@
                 document.getElementById('progress1').className = 'w-16 h-1 bg-forest-500 rounded';
             }
             if (currentStep >= 3) {
-                document.getElementById('step3').className = 'step-indicator step-completed rounded-full w-10 h-10 flex items-center justify-center font-bold text-sm';
+                document.getElementById('step3').className = currentStep === 3 ? 'step-indicator step-active rounded-full w-10 h-10 flex items-center justify-center font-bold text-sm' : 'step-indicator step-completed rounded-full w-10 h-10 flex items-center justify-center font-bold text-sm';
                 document.getElementById('progress2').className = 'w-16 h-1 bg-forest-500 rounded';
+            }
+            if (currentStep >= 4) {
+                document.getElementById('step4').className = 'step-indicator step-completed rounded-full w-10 h-10 flex items-center justify-center font-bold text-sm';
+                document.getElementById('progress3').className = 'w-16 h-1 bg-forest-500 rounded';
             }
             
             // Update step title and subtitle
             const titles = {
-                1: { title: 'Passo 1 de 3', subtitle: 'Informações da Fazenda' },
-                2: { title: 'Passo 2 de 3', subtitle: 'Criar Conta de Administrador' },
-                3: { title: 'Configuração Concluída', subtitle: 'Resumo da Configuração' }
+                1: { title: 'Passo 1 de 4', subtitle: 'Informações da Fazenda' },
+                2: { title: 'Passo 2 de 4', subtitle: 'Criar Conta de Administrador' },
+                3: { title: 'Passo 3 de 4', subtitle: 'Confirmar Configuração' },
+                4: { title: 'Configuração Concluída', subtitle: 'Resumo da Configuração' }
             };
             
             document.getElementById('stepTitle').textContent = titles[currentStep].title;
             document.getElementById('stepSubtitle').textContent = titles[currentStep].subtitle;
         }
 
+        async function finalizeSetup() {
+            const finalizeBtn = document.getElementById('finalizeBtn');
+            const originalText = finalizeBtn.textContent;
+            
+            // Evitar múltiplas submissões
+            if (isProcessing) {
+                console.log('Já está processando, ignorando nova tentativa');
+                return;
+            }
+            
+            try {
+                isProcessing = true;
+                // Desabilitar botão e mostrar loading
+                finalizeBtn.disabled = true;
+                finalizeBtn.textContent = 'Criando conta...';
+                
+                // 1. Verificar se usuário já existe
+                const { data: existingUser, error: checkError } = await supabase
+                    .from('users')
+                    .select('id')
+                    .eq('email', adminData.email)
+                    .single();
+                
+                let authData;
+                
+                if (existingUser) {
+                    // Usuário já existe, fazer login
+                    const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+                        email: adminData.email,
+                        password: adminData.password
+                    });
+                    
+                    if (loginError) {
+                        throw new Error(`Usuário já existe. Erro no login: ${loginError.message}`);
+                    }
+                    
+                    authData = loginData;
+                } else {
+                    // Criar nova conta
+                    const { data: signUpData, error: authError } = await supabase.auth.signUp({
+                        email: adminData.email,
+                        password: adminData.password
+                    });
+                    
+                    if (authError) {
+                        if (authError.message.includes('User already registered')) {
+                            // Se o usuário já existe no Auth mas não no banco, fazer login
+                            const { data: loginData, error: loginError } = await supabase.auth.signInWithPassword({
+                                email: adminData.email,
+                                password: adminData.password
+                            });
+                            
+                            if (loginError) {
+                                throw new Error(`Usuário já registrado. Erro no login: ${loginError.message}`);
+                            }
+                            
+                            authData = loginData;
+                        } else {
+                            throw new Error(`Erro na criação da conta: ${authError.message}`);
+                        }
+                    } else {
+                        authData = signUpData;
+                    }
+                }
+                
+                finalizeBtn.textContent = 'Verificando fazenda...';
+                
+                // 2. Verificar novamente se a fazenda já existe
+                console.log('Verificando fazenda com dados:', { name: farmData.name, cnpj: farmData.cnpj });
+                const { data: farmExists, error: farmCheckError } = await supabase
+                    .rpc('check_farm_exists', { p_name: farmData.name, p_cnpj: farmData.cnpj });
+                
+                console.log('Resultado da verificação:', { farmExists, farmCheckError });
+                
+                if (farmCheckError) {
+                    throw new Error(`Erro na verificação da fazenda: ${farmCheckError.message}`);
+                }
+                
+                if (farmExists) {
+                    throw new Error('Já existe uma fazenda com este nome ou CNPJ. Por favor, use dados diferentes.');
+                }
+                
+                finalizeBtn.textContent = 'Criando fazenda...';
+                
+                // 3. Criar fazenda no banco de dados
+                console.log('Criando fazenda com dados:', farmData);
+                const { data: farmResult, error: farmError } = await supabase.rpc('create_initial_farm', {
+                    p_name: farmData.name,
+                    p_owner_name: farmData.owner_name,
+                    p_cnpj: farmData.cnpj || '',
+                    p_city: farmData.city || '',
+                    p_state: farmData.state || '',
+                    p_phone: farmData.phone || '',
+                    p_email: farmData.email || '',
+                    p_address: farmData.address || ''
+                });
+                
+                console.log('Resultado da criação da fazenda:', { farmResult, farmError });
+                
+                if (farmError) {
+                    throw new Error(`Erro na criação da fazenda: ${farmError.message}`);
+                }
+                
+                finalizeBtn.textContent = 'Configurando usuário...';
+                
+                // 4. Criar usuário no banco de dados
+                const { data: userResult, error: userError } = await supabase.rpc('create_initial_user', {
+                    p_user_id: authData.user.id,
+                    p_farm_id: farmResult,
+                    p_name: adminData.name,
+                    p_email: adminData.email,
+                    p_role: adminData.role,
+                    p_whatsapp: adminData.whatsapp || ''
+                });
+                
+                if (userError) {
+                    throw new Error(`Erro na criação do usuário: ${userError.message}`);
+                }
+                
+                finalizeBtn.textContent = 'Finalizando...';
+                
+                // 5. Marcar configuração como completa
+                const { error: setupError } = await supabase.rpc('complete_farm_setup', {
+                    p_farm_id: farmResult
+                });
+                
+                if (setupError) {
+                    throw new Error(`Erro ao finalizar configuração: ${setupError.message}`);
+                }
+                
+                // 6. Fazer login automático
+                const { error: loginError } = await supabase.auth.signInWithPassword({
+                    email: adminData.email,
+                    password: adminData.password
+                });
+                
+                if (loginError) {
+                    console.warn('Erro no login automático:', loginError.message);
+                }
+                
+                // 7. Ir para o passo de sucesso
+                isProcessing = false;
+                goToStep4();
+                
+            } catch (error) {
+                console.error('Erro na finalização:', error);
+                alert(`Erro na criação da conta: ${error.message}`);
+                
+                // Reabilitar botão e resetar flag
+                isProcessing = false;
+                finalizeBtn.disabled = false;
+                finalizeBtn.textContent = originalText;
+            }
+        }
+
+        function updateConfirmationData() {
+            document.getElementById('confirmFarmName').textContent = farmData.name;
+            document.getElementById('confirmOwnerName').textContent = farmData.owner_name;
+            document.getElementById('confirmLocation').textContent = `${farmData.city}, ${farmData.state}`;
+            document.getElementById('confirmDocument').textContent = farmData.cnpj || 'Não informado';
+            document.getElementById('confirmAdminName').textContent = adminData.name;
+            document.getElementById('confirmAdminEmail').textContent = adminData.email;
+            document.getElementById('confirmAdminRole').textContent = adminData.role === 'proprietario' ? 'Proprietário' : 'Gerente';
+        }
+
         function updateSummary() {
             document.getElementById('summaryFarmName').textContent = farmData.name;
             document.getElementById('summaryOwnerName').textContent = farmData.owner_name;
             document.getElementById('summaryLocation').textContent = `${farmData.city}, ${farmData.state}`;
-            document.getElementById('summaryAnimals').textContent = `${farmData.animal_count} animais`;
+            // Campo de animais removido do formulário
             document.getElementById('summaryAdminName').textContent = adminData.name;
             document.getElementById('summaryAdminRole').textContent = adminData.role === 'proprietario' ? 'Proprietário' : 'Gerente';
         }

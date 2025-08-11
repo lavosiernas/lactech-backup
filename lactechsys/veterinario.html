@@ -9,12 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="assets/js/pdf-generator.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        const supabase = window.supabase.createClient(
-            'https://mauioyodoxmuzqweaasc.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1hdWlveW9kb3htdXpxd2VhYXNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ3NzYyNzksImV4cCI6MjA3MDM1MjI3OX0.m2nZ_5Vbi9aBz1vZ_oA-JHsd_yqD9brJXjnr39k7Ajc'
-        );
-    </script></script>
+    <script src="supabase_config_fixed.js"></script>
     <script src="auth_fix.js"></script>
     <script>
         // Aguardar configuração do Supabase antes de carregar fix_data_sync_complete.js
@@ -73,6 +68,9 @@
                     </button>
                     <button class="nav-item relative px-3 py-2 text-sm font-semibold text-white hover:text-forest-200 transition-all rounded-lg" data-tab="treatments">
                         Tratamentos
+                    </button>
+                    <button class="nav-item relative px-3 py-2 text-sm font-semibold text-white hover:text-forest-200 transition-all rounded-lg" data-tab="insemination">
+                        Inseminação IA
                     </button>
                     <button class="nav-item relative px-3 py-2 text-sm font-semibold text-white hover:text-forest-200 transition-all rounded-lg" data-tab="reports">
                         Relatórios
@@ -411,6 +409,253 @@
             </div>
         </div>
 
+        <!-- Insemination Tab -->
+        <div id="insemination-tab" class="tab-content hidden">
+            <div class="space-y-6">
+                <!-- Header -->
+                <div class="data-card rounded-2xl p-6">
+                    <div class="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+                        <div>
+                            <h2 class="text-xl md:text-2xl font-bold text-slate-900 mb-1">Inseminação Artificial</h2>
+                            <p class="text-slate-600 text-sm">Controle reprodutivo e registro de inseminações</p>
+                        </div>
+                        <div class="flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
+                            <select id="inseminationFilter" class="px-4 py-2 border border-slate-200 rounded-lg text-sm focus:border-forest-500 focus:outline-none">
+                                <option value="all">Todas as inseminações</option>
+                                <option value="confirmed">Gravidez confirmada</option>
+                                <option value="pending">Aguardando confirmação</option>
+                                <option value="failed">Não confirmada</option>
+                            </select>
+                            <button onclick="openAddInseminationModal()" class="px-4 py-2 bg-forest-600 text-white rounded-lg hover:shadow-lg transition-all font-semibold text-sm">
+                                <svg class="w-4 h-4 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                Nova Inseminação
+                            </button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Insemination Statistics -->
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
+                    <div class="data-card rounded-2xl p-4 text-center">
+                        <div class="w-12 h-12 bg-blue-500 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                            </svg>
+                        </div>
+                        <div class="text-xl font-bold text-slate-900 mb-1" id="totalInseminations">--</div>
+                        <div class="text-xs text-slate-500 font-medium">Total</div>
+                        <div class="text-xs text-slate-600 font-semibold mt-1">Inseminações</div>
+                    </div>
+                    
+                    <div class="data-card rounded-2xl p-4 text-center">
+                        <div class="w-12 h-12 bg-green-500 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="text-xl font-bold text-slate-900 mb-1" id="confirmedPregnancies">--</div>
+                        <div class="text-xs text-slate-500 font-medium">Confirmadas</div>
+                        <div class="text-xs text-slate-600 font-semibold mt-1">Gestações</div>
+                    </div>
+                    
+                    <div class="data-card rounded-2xl p-4 text-center">
+                        <div class="w-12 h-12 bg-yellow-500 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                            </svg>
+                        </div>
+                        <div class="text-xl font-bold text-slate-900 mb-1" id="pendingConfirmations">--</div>
+                        <div class="text-xs text-slate-500 font-medium">Pendentes</div>
+                        <div class="text-xs text-slate-600 font-semibold mt-1">Confirmações</div>
+                    </div>
+                    
+                    <div class="data-card rounded-2xl p-4 text-center">
+                        <div class="w-12 h-12 bg-purple-500 rounded-xl flex items-center justify-center mx-auto mb-3 shadow-lg">
+                            <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M16 8v8m-4-5v5m-4-2v2m-2 4h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z"></path>
+                            </svg>
+                        </div>
+                        <div class="text-xl font-bold text-slate-900 mb-1" id="successRate">--%</div>
+                        <div class="text-xs text-slate-500 font-medium">Taxa de</div>
+                        <div class="text-xs text-slate-600 font-semibold mt-1">Sucesso</div>
+                    </div>
+                </div>
+
+                <!-- Insemination Form -->
+                <div class="data-card rounded-2xl p-6">
+                    <h3 class="text-lg font-bold text-slate-900 mb-4">Registrar Inseminação Artificial</h3>
+                    <form id="inseminationForm" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <!-- Animal ID -->
+                            <div class="form-floating">
+                                <input type="text" id="inseminationAnimalId" name="animal_id" class="w-full px-3 py-4 border border-slate-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none" placeholder=" " required>
+                                <label for="inseminationAnimalId" class="text-slate-600">ID do Animal *</label>
+                            </div>
+
+                            <!-- Insemination Date -->
+                            <div class="form-floating">
+                                <input type="datetime-local" id="inseminationDate" name="insemination_date" class="w-full px-3 py-4 border border-slate-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none" required>
+                                <label for="inseminationDate" class="text-slate-600">Data e Hora da IA *</label>
+                            </div>
+
+                            <!-- Semen Batch -->
+                            <div class="form-floating">
+                                <input type="text" id="semenBatch" name="semen_batch" class="w-full px-3 py-4 border border-slate-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none" placeholder=" " required>
+                                <label for="semenBatch" class="text-slate-600">Lote do Sêmen *</label>
+                            </div>
+
+                            <!-- Bull ID -->
+                            <div class="form-floating">
+                                <input type="text" id="bullId" name="bull_id" class="w-full px-3 py-4 border border-slate-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none" placeholder=" ">
+                                <label for="bullId" class="text-slate-600">ID do Touro</label>
+                            </div>
+
+                            <!-- Technician -->
+                            <div class="form-floating">
+                                <input type="text" id="technician" name="technician" class="w-full px-3 py-4 border border-slate-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none" placeholder=" ">
+                                <label for="technician" class="text-slate-600">Técnico Responsável</label>
+                            </div>
+
+                            <!-- Heat Detection Method -->
+                            <div class="form-floating">
+                                <select id="heatDetectionMethod" name="heat_detection_method" class="w-full px-3 py-4 border border-slate-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none">
+                                    <option value="">Selecione...</option>
+                                    <option value="visual">Observação Visual</option>
+                                    <option value="detector">Detector de Cio</option>
+                                    <option value="hormonal">Sincronização Hormonal</option>
+                                    <option value="other">Outro</option>
+                                </select>
+                                <label for="heatDetectionMethod" class="text-slate-600">Método de Detecção do Cio</label>
+                            </div>
+
+                            <!-- Body Condition Score -->
+                            <div class="form-floating">
+                                <select id="bodyConditionScore" name="body_condition_score" class="w-full px-3 py-4 border border-slate-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none">
+                                    <option value="">Selecione...</option>
+                                    <option value="1">1 - Muito Magra</option>
+                                    <option value="2">2 - Magra</option>
+                                    <option value="3">3 - Ideal</option>
+                                    <option value="4">4 - Gorda</option>
+                                    <option value="5">5 - Muito Gorda</option>
+                                </select>
+                                <label for="bodyConditionScore" class="text-slate-600">Escore de Condição Corporal</label>
+                            </div>
+
+                            <!-- Expected Birth Date (calculated automatically) -->
+                            <div class="form-floating">
+                                <input type="date" id="expectedBirthDate" name="expected_birth_date" class="w-full px-3 py-4 border border-slate-200 rounded-xl bg-slate-50" readonly>
+                                <label for="expectedBirthDate" class="text-slate-600">Data Prevista de Parto (calculada)</label>
+                            </div>
+                        </div>
+
+                        <!-- Observations -->
+                        <div class="form-floating">
+                            <textarea id="inseminationObservations" name="observations" rows="3" class="w-full px-3 py-4 border border-slate-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none resize-none" placeholder=" "></textarea>
+                            <label for="inseminationObservations" class="text-slate-600">Observações Técnicas</label>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                            <button type="submit" class="flex-1 gradient-forest text-white font-semibold py-3 px-6 rounded-xl hover:shadow-lg transition-all">
+                                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
+                                </svg>
+                                Registrar Inseminação
+                            </button>
+                            <button type="button" onclick="resetInseminationForm()" class="px-6 py-3 border border-slate-300 text-slate-700 font-semibold rounded-xl hover:bg-slate-50 transition-all">
+                                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                                </svg>
+                                Limpar Formulário
+                            </button>
+                        </div>
+                    </form>
+                </div>
+
+                <!-- Inseminations List -->
+                <div class="data-card rounded-2xl p-6">
+                    <div class="flex items-center justify-between mb-4">
+                        <h3 class="text-lg font-bold text-slate-900">Histórico de Inseminações</h3>
+                        <button onclick="refreshInseminationsList()" class="text-forest-600 hover:text-forest-700 p-2 rounded-lg hover:bg-forest-50 transition-all">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                <path stroke-linecap="round" stroke-linejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path>
+                            </svg>
+                        </button>
+                    </div>
+                    <div class="space-y-4" id="inseminationsList">
+                        <div class="text-center py-12">
+                            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Nenhuma Inseminação Registrada</h3>
+                            <p class="text-gray-600 mb-4">Registre inseminações para controlar o programa reprodutivo</p>
+                            <p class="text-gray-500 text-sm">Use o formulário acima para adicionar uma nova inseminação</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Pregnancy Confirmation Section -->
+                <div class="data-card rounded-2xl p-6">
+                    <h3 class="text-lg font-bold text-slate-900 mb-4">Confirmação de Gravidez</h3>
+                    <form id="pregnancyConfirmationForm" class="space-y-6">
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                            <!-- Insemination ID -->
+                            <div class="form-floating">
+                                <select id="inseminationSelect" name="insemination_id" class="w-full px-3 py-4 border border-slate-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none" required>
+                                    <option value="">Selecione uma inseminação...</option>
+                                </select>
+                                <label for="inseminationSelect" class="text-slate-600">Inseminação *</label>
+                            </div>
+
+                            <!-- Pregnancy Status -->
+                            <div class="form-floating">
+                                <select id="pregnancyStatus" name="pregnancy_confirmed" class="w-full px-3 py-4 border border-slate-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none" required>
+                                    <option value="">Selecione...</option>
+                                    <option value="true">Confirmada</option>
+                                    <option value="false">Não Confirmada</option>
+                                </select>
+                                <label for="pregnancyStatus" class="text-slate-600">Status da Gravidez *</label>
+                            </div>
+
+                            <!-- Confirmation Method -->
+                            <div class="form-floating">
+                                <select id="confirmationMethod" name="confirmation_method" class="w-full px-3 py-4 border border-slate-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none">
+                                    <option value="">Selecione...</option>
+                                    <option value="ultrasound">Ultrassom</option>
+                                    <option value="palpation">Palpação Retal</option>
+                                    <option value="blood_test">Exame de Sangue</option>
+                                    <option value="visual">Observação Visual</option>
+                                </select>
+                                <label for="confirmationMethod" class="text-slate-600">Método de Confirmação</label>
+                            </div>
+                        </div>
+
+                        <!-- Confirmation Date -->
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <div class="form-floating">
+                                <input type="date" id="confirmationDate" name="confirmation_date" class="w-full px-3 py-4 border border-slate-200 rounded-xl focus:border-forest-500 focus:ring-2 focus:ring-forest-100 focus:outline-none" required>
+                                <label for="confirmationDate" class="text-slate-600">Data da Confirmação *</label>
+                            </div>
+                        </div>
+
+                        <!-- Submit Button -->
+                        <div class="flex flex-col sm:flex-row gap-4 pt-4">
+                            <button type="submit" class="flex-1 gradient-forest text-white font-semibold py-3 px-6 rounded-xl hover:shadow-lg transition-all">
+                                <svg class="w-5 h-5 inline mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                                </svg>
+                                Confirmar Gravidez
+                            </button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+
         <!-- Reports Tab -->
         <div id="reports-tab" class="tab-content hidden">
             <div class="space-y-6">
@@ -507,6 +752,12 @@
                     <path stroke-linecap="round" stroke-linejoin="round" d="M19.428 15.428a2 2 0 00-1.022-.547l-2.387-.477a6 6 0 00-3.86.517l-.318.158a6 6 0 01-3.86.517L6.05 15.21a2 2 0 00-1.806.547M8 4h8l-1 1v5.172a2 2 0 00.586 1.414l5 5c1.26 1.26.367 3.414-1.415 3.414H4.828c-1.782 0-2.674-2.154-1.414-3.414l5-5A2 2 0 009 10.172V5L8 4z"></path>
                 </svg>
                 <span class="text-xs font-semibold">Tratamentos</span>
+            </button>
+            <button class="mobile-nav-item flex flex-col items-center py-3 px-2 transition-all" data-tab="insemination">
+                <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
+                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z"></path>
+                </svg>
+                <span class="text-xs font-semibold">Inseminação IA</span>
             </button>
             <button class="mobile-nav-item flex flex-col items-center py-3 px-2 transition-all" data-tab="reports">
                 <svg class="w-5 h-5 mb-1" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="1.5">
@@ -2038,6 +2289,270 @@
 
         // Ativar proteção contra muitas requisições
         checkDatabaseRequests();
+
+        // ===== FUNÇÕES DE INSEMINAÇÃO ARTIFICIAL =====
+        
+        // Calcular data prevista de parto (280 dias após inseminação)
+        function calculateExpectedBirthDate(inseminationDate) {
+            if (!inseminationDate) return '';
+            const date = new Date(inseminationDate);
+            date.setDate(date.getDate() + 280); // Gestação bovina média: 280 dias
+            return date.toISOString().split('T')[0];
+        }
+
+        // Atualizar data prevista automaticamente
+        document.getElementById('inseminationDate')?.addEventListener('change', function() {
+            const expectedDate = calculateExpectedBirthDate(this.value);
+            document.getElementById('expectedBirthDate').value = expectedDate;
+        });
+
+        // Registrar nova inseminação
+        async function registerInsemination(formData) {
+            try {
+                const { data, error } = await supabase.rpc('register_artificial_insemination', {
+                    p_animal_id: formData.animal_id,
+                    p_insemination_date: formData.insemination_date,
+                    p_semen_batch: formData.semen_batch,
+                    p_bull_id: formData.bull_id || null,
+                    p_technician: formData.technician || null,
+                    p_heat_detection_method: formData.heat_detection_method || null,
+                    p_body_condition_score: formData.body_condition_score ? parseInt(formData.body_condition_score) : null,
+                    p_expected_birth_date: formData.expected_birth_date || null,
+                    p_observations: formData.observations || null
+                });
+
+                if (error) throw error;
+                
+                showNotification('Inseminação registrada com sucesso!', 'success');
+                document.getElementById('inseminationForm').reset();
+                await loadInseminationsList();
+                await loadInseminationStats();
+                await loadPendingInseminations();
+                
+                return data;
+            } catch (error) {
+                console.error('Erro ao registrar inseminação:', error);
+                showNotification('Erro ao registrar inseminação: ' + error.message, 'error');
+                throw error;
+            }
+        }
+
+        // Confirmar gravidez
+        async function confirmPregnancy(inseminationId, isConfirmed, confirmationMethod, confirmationDate) {
+            try {
+                const { data, error } = await supabase.rpc('confirm_pregnancy', {
+                    p_insemination_id: inseminationId,
+                    p_pregnancy_confirmed: isConfirmed,
+                    p_confirmation_method: confirmationMethod,
+                    p_confirmation_date: confirmationDate
+                });
+
+                if (error) throw error;
+                
+                showNotification('Status de gravidez atualizado com sucesso!', 'success');
+                document.getElementById('pregnancyConfirmationForm').reset();
+                await loadInseminationsList();
+                await loadInseminationStats();
+                await loadPendingInseminations();
+                
+                return data;
+            } catch (error) {
+                console.error('Erro ao confirmar gravidez:', error);
+                showNotification('Erro ao confirmar gravidez: ' + error.message, 'error');
+                throw error;
+            }
+        }
+
+        // Carregar lista de inseminações
+        async function loadInseminationsList() {
+            try {
+                const { data: inseminations, error } = await supabase
+                    .from('artificial_inseminations')
+                    .select(`
+                        *,
+                        animals(animal_id, breed)
+                    `)
+                    .order('insemination_date', { ascending: false });
+
+                if (error) throw error;
+
+                const container = document.getElementById('inseminationsList');
+                if (!container) return;
+
+                if (!inseminations || inseminations.length === 0) {
+                    container.innerHTML = `
+                        <div class="text-center py-12">
+                            <div class="w-20 h-20 bg-gray-100 rounded-full flex items-center justify-center mx-auto mb-6">
+                                <svg class="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24" stroke-width="2">
+                                    <path stroke-linecap="round" stroke-linejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z"></path>
+                                </svg>
+                            </div>
+                            <h3 class="text-lg font-semibold text-gray-900 mb-2">Nenhuma Inseminação Registrada</h3>
+                            <p class="text-gray-600 mb-4">Registre inseminações para controlar o programa reprodutivo</p>
+                            <p class="text-gray-500 text-sm">Use o formulário acima para adicionar uma nova inseminação</p>
+                        </div>
+                    `;
+                    return;
+                }
+
+                container.innerHTML = inseminations.map(insemination => {
+                    const date = new Date(insemination.insemination_date).toLocaleDateString('pt-BR');
+                    const expectedBirth = insemination.expected_birth_date ? 
+                        new Date(insemination.expected_birth_date).toLocaleDateString('pt-BR') : 'N/A';
+                    
+                    const statusBadge = insemination.pregnancy_confirmed === true ? 
+                        '<span class="px-2 py-1 bg-green-100 text-green-800 text-xs font-medium rounded-full">Confirmada</span>' :
+                        insemination.pregnancy_confirmed === false ?
+                        '<span class="px-2 py-1 bg-red-100 text-red-800 text-xs font-medium rounded-full">Não Confirmada</span>' :
+                        '<span class="px-2 py-1 bg-yellow-100 text-yellow-800 text-xs font-medium rounded-full">Pendente</span>';
+
+                    return `
+                        <div class="border border-slate-200 rounded-xl p-4 hover:shadow-md transition-all">
+                            <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+                                <div class="flex-1">
+                                    <div class="flex items-center gap-3 mb-2">
+                                        <h4 class="font-semibold text-slate-900">Animal: ${insemination.animal_id}</h4>
+                                        ${statusBadge}
+                                    </div>
+                                    <div class="grid grid-cols-2 md:grid-cols-4 gap-2 text-sm text-slate-600">
+                                        <div><strong>Data IA:</strong> ${date}</div>
+                                        <div><strong>Lote:</strong> ${insemination.semen_batch}</div>
+                                        <div><strong>Touro:</strong> ${insemination.bull_id || 'N/A'}</div>
+                                        <div><strong>Parto Prev.:</strong> ${expectedBirth}</div>
+                                    </div>
+                                    ${insemination.technician ? `<div class="text-sm text-slate-600 mt-1"><strong>Técnico:</strong> ${insemination.technician}</div>` : ''}
+                                    ${insemination.observations ? `<div class="text-sm text-slate-600 mt-1"><strong>Obs:</strong> ${insemination.observations}</div>` : ''}
+                                </div>
+                                <div class="flex gap-2">
+                                    ${insemination.pregnancy_confirmed === null ? `
+                                        <button onclick="quickConfirmPregnancy('${insemination.id}', true)" class="px-3 py-1 bg-green-600 text-white text-xs rounded-lg hover:bg-green-700 transition-all">
+                                            Confirmar
+                                        </button>
+                                        <button onclick="quickConfirmPregnancy('${insemination.id}', false)" class="px-3 py-1 bg-red-600 text-white text-xs rounded-lg hover:bg-red-700 transition-all">
+                                            Negar
+                                        </button>
+                                    ` : ''}
+                                </div>
+                            </div>
+                        </div>
+                    `;
+                }).join('');
+
+            } catch (error) {
+                console.error('Erro ao carregar inseminações:', error);
+                showNotification('Erro ao carregar lista de inseminações', 'error');
+            }
+        }
+
+        // Carregar estatísticas de inseminação
+        async function loadInseminationStats() {
+            try {
+                const { data: inseminations, error } = await supabase
+                    .from('artificial_inseminations')
+                    .select('pregnancy_confirmed');
+
+                if (error) throw error;
+
+                const total = inseminations?.length || 0;
+                const confirmed = inseminations?.filter(i => i.pregnancy_confirmed === true).length || 0;
+                const pending = inseminations?.filter(i => i.pregnancy_confirmed === null).length || 0;
+                const successRate = total > 0 ? Math.round((confirmed / total) * 100) : 0;
+
+                document.getElementById('totalInseminations').textContent = total;
+                document.getElementById('confirmedPregnancies').textContent = confirmed;
+                document.getElementById('pendingConfirmations').textContent = pending;
+                document.getElementById('successRate').textContent = successRate + '%';
+
+            } catch (error) {
+                console.error('Erro ao carregar estatísticas:', error);
+            }
+        }
+
+        // Carregar inseminações pendentes para o select
+        async function loadPendingInseminations() {
+            try {
+                const { data: inseminations, error } = await supabase
+                    .from('artificial_inseminations')
+                    .select('id, animal_id, insemination_date, semen_batch')
+                    .is('pregnancy_confirmed', null)
+                    .order('insemination_date', { ascending: false });
+
+                if (error) throw error;
+
+                const select = document.getElementById('inseminationSelect');
+                if (!select) return;
+
+                select.innerHTML = '<option value="">Selecione uma inseminação...</option>';
+                
+                if (inseminations && inseminations.length > 0) {
+                    inseminations.forEach(insemination => {
+                        const date = new Date(insemination.insemination_date).toLocaleDateString('pt-BR');
+                        const option = document.createElement('option');
+                        option.value = insemination.id;
+                        option.textContent = `${insemination.animal_id} - ${date} - Lote: ${insemination.semen_batch}`;
+                        select.appendChild(option);
+                    });
+                }
+
+            } catch (error) {
+                console.error('Erro ao carregar inseminações pendentes:', error);
+            }
+        }
+
+        // Confirmação rápida de gravidez
+        async function quickConfirmPregnancy(inseminationId, isConfirmed) {
+            const today = new Date().toISOString().split('T')[0];
+            await confirmPregnancy(inseminationId, isConfirmed, 'visual', today);
+        }
+
+        // Resetar formulário de inseminação
+        function resetInseminationForm() {
+            document.getElementById('inseminationForm').reset();
+            document.getElementById('expectedBirthDate').value = '';
+        }
+
+        // Atualizar lista de inseminações
+        function refreshInseminationsList() {
+            loadInseminationsList();
+            loadInseminationStats();
+            loadPendingInseminations();
+        }
+
+        // Event listeners para formulários de inseminação
+        document.getElementById('inseminationForm')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+            await registerInsemination(data);
+        });
+
+        document.getElementById('pregnancyConfirmationForm')?.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            const formData = new FormData(this);
+            const data = Object.fromEntries(formData.entries());
+            
+            await confirmPregnancy(
+                data.insemination_id,
+                data.pregnancy_confirmed === 'true',
+                data.confirmation_method,
+                data.confirmation_date
+            );
+        });
+
+        // Carregar dados de inseminação quando a aba for ativada
+        document.addEventListener('DOMContentLoaded', function() {
+            // Adicionar listener para quando a aba de inseminação for ativada
+            const inseminationTab = document.querySelector('[data-tab="insemination"]');
+            if (inseminationTab) {
+                inseminationTab.addEventListener('click', function() {
+                    setTimeout(() => {
+                        loadInseminationsList();
+                        loadInseminationStats();
+                        loadPendingInseminations();
+                    }, 100);
+                });
+            }
+        });
 
         console.log('✅ BANCO PROTEGIDO - CONSOLE.LOGS REMOVIDOS');
     </script>

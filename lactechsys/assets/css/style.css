@@ -1516,8 +1516,41 @@ main {
 }
 
 /* Correções para elementos de flex */
-/* Removidos overrides globais de utilitários Flex no modo escuro
-   Eles faziam elementos com `hidden` aparecerem (ex.: modais com `flex`). */
+.dark .flex {
+    display: flex !important;
+}
+
+.dark .flex-col {
+    flex-direction: column !important;
+}
+
+.dark .flex-row {
+    flex-direction: row !important;
+}
+
+.dark .items-center {
+    align-items: center !important;
+}
+
+.dark .items-start {
+    align-items: flex-start !important;
+}
+
+.dark .justify-center {
+    justify-content: center !important;
+}
+
+.dark .justify-between {
+    justify-content: space-between !important;
+}
+
+.dark .flex-1 {
+    flex: 1 1 0% !important;
+}
+
+.dark .flex-shrink-0 {
+    flex-shrink: 0 !important;
+}
 
 /* Padding/Margin overrides removed to keep identical spacing across themes */
 

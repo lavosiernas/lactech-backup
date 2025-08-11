@@ -9,12 +9,7 @@
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="assets/js/pdf-generator.js"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        const supabase = window.supabase.createClient(
-            'https://mauioyodoxmuzqweaasc.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1hdWlveW9kb3htdXpxd2VhYXNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ3NzYyNzksImV4cCI6MjA3MDM1MjI3OX0.m2nZ_5Vbi9aBz1vZ_oA-JHsd_yqD9brJXjnr39k7Ajc'
-        );
-    </script></script>
+    <script src="supabase_config_fixed.js"></script>
     <script src="auth_fix.js"></script>
     <script>
         // Aguardar configuração do Supabase antes de carregar fix_data_sync_complete.js
@@ -1712,13 +1707,13 @@
                 const { data: { user } } = await supabase.auth.getUser();
                 if (!user) throw new Error('User not authenticated');
 
-                // Buscar dados financeiros (pagamentos)
-                const { data: paymentsData, error: paymentsError } = await supabase
-                    .from('payments')
+                // Buscar dados financeiros
+                const { data: financialData, error: financialError } = await supabase
+                    .from('financial_records')
                     .select('*')
                     .order('created_at', { ascending: false });
 
-                if (paymentsError) throw paymentsError;
+                if (financialError) throw financialError;
 
                 // Buscar dados de produção para calcular receita
                 const { data: productionData, error: productionError } = await supabase
@@ -1783,10 +1778,10 @@
                 const pricePerLiter = 2.50; // Preço médio por litro
                 const totalRevenue = totalProduction * pricePerLiter;
 
-                // Calcular total de pagamentos
-                const totalPayments = paymentsData.reduce((sum, payment) => sum + (parseFloat(payment.net_amount) || 0), 0);
-                const pendingPayments = paymentsData.filter(p => p.payment_status === 'pendente').reduce((sum, payment) => sum + (parseFloat(payment.net_amount) || 0), 0);
-                const completedPayments = paymentsData.filter(p => p.payment_status === 'pago').reduce((sum, payment) => sum + (parseFloat(payment.net_amount) || 0), 0);
+                // Calcular total de registros financeiros (receitas)
+                const totalPayments = paymentsData.reduce((sum, payment) => sum + (parseFloat(payment.amount) || 0), 0);
+                const pendingPayments = 0; // Não há status pendente em financial_records
+                const completedPayments = totalPayments; // Todas as receitas são consideradas realizadas
 
                 // Configurações
                 const pageWidth = doc.internal.pageSize.getWidth();
@@ -1861,9 +1856,9 @@
                     xPosition = margin;
                     const rowData = [
                         new Date(payment.created_at).toLocaleDateString('pt-BR'),
-                        (payment.description || 'Pagamento').substring(0, 25),
-                        `R$ ${payment.net_amount || '0'}`,
-                        payment.payment_status === 'pago' ? 'Realizado' : payment.payment_status === 'pendente' ? 'Pendente' : 'Atrasado'
+                        (payment.description || 'Receita').substring(0, 25),
+                        `R$ ${payment.amount || '0'}`,
+                        'Realizado' // Todas as receitas em financial_records são consideradas realizadas
                     ];
 
                     rowData.forEach((cell, cellIndex) => {
@@ -2021,14 +2016,14 @@
 
                     if (qualityError) throw qualityError;
 
-                    // Buscar dados de pagamentos
-                    const { data: paymentsData, error: paymentsError } = await supabase
-                        .from('payments')
+                    // Buscar dados financeiros
+                    const { data: financialData, error: financialError } = await supabase
+                        .from('financial_records')
                         .select('*')
                         .eq('farm_id', userData.farm_id)
                         .order('created_at', { ascending: false });
 
-                    if (paymentsError) throw paymentsError;
+                    if (financialError) throw financialError;
 
                     // Buscar dados de usuários
                     const { data: usersData, error: usersError } = await supabase
@@ -2055,7 +2050,7 @@
                         users: usersData,
                         production: productionData,
                         quality_tests: qualityData,
-                        payments: paymentsData
+                        financial_records: financialData
                     };
 
                     // Download do arquivo JSON
@@ -2116,13 +2111,13 @@
 
                             if (productionError) throw productionError;
 
-                            // 3. Deletar pagamentos
-                            const { error: paymentsError } = await supabase
-                                .from('payments')
+                            // 3. Deletar registros financeiros
+                            const { error: financialError } = await supabase
+                                .from('financial_records')
                                 .delete()
                                 .eq('farm_id', userData.farm_id);
 
-                            if (paymentsError) throw paymentsError;
+                            if (financialError) throw financialError;
 
                             // 4. Deletar usuários (exceto o proprietário atual)
                             const { error: usersError } = await supabase

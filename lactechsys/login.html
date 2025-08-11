@@ -6,13 +6,7 @@
     <title>Login - LacTech</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <script>
-        // NOVO SUPABASE - Credenciais atualizadas
-        const supabase = window.supabase.createClient(
-            'https://mauioyodoxmuzqweaasc.supabase.co',
-            'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im1hdWlveW9kb3htdXpxd2VhYXNjIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ3NzYyNzksImV4cCI6MjA3MDM1MjI3OX0.m2nZ_5Vbi9aBz1vZ_oA-JHsd_yqD9brJXjnr39k7Ajc'
-        );
-    </script>
+    <script src="supabase_config_fixed.js"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" href="https://i.postimg.cc/vmrkgDcB/lactech.png" type="image/x-icon">
     <link rel="stylesheet" href="assets/css/style.css">
@@ -338,18 +332,22 @@
                 
                 console.log('Auth successful, getting user profile...');
                 
-                // Get user profile from database
-                const { data: userData, error: userError } = await supabase
+                // Get user profile from database - SEMPRE PEGAR A CONTA PRIMÁRIA
+                const { data: usersData, error: usersError } = await supabase
                     .from('users')
                     .select('*')
                     .eq('email', email)
                     .eq('is_active', true)
-                    .single();
+                    .order('created_at', { ascending: true }); // Primeira conta criada = primária
                 
-                if (userError || !userData) {
+                if (usersError || !usersData || usersData.length === 0) {
                     console.log('User profile not found in database');
                     throw new Error('Usuário não encontrado no sistema. Complete o cadastro primeiro.');
                 }
+                
+                // Sempre usar a conta primária (primeira criada)
+                const userData = usersData[0];
+                console.log('Usando conta primária:', userData.id, 'de', usersData.length, 'contas encontradas');
                 
                 console.log('User profile found:', userData);
                 

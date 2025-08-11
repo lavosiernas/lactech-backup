@@ -103,7 +103,7 @@ async function generateVolumePDF(data, isPreview = false) {
     console.log("- window.reportSettings:", window.reportSettings)
 
     const today = new Date().toLocaleDateString("pt-BR")
-    const totalVolume = data.reduce((sum, record) => sum + (Number.parseFloat(record.volume_liters) || 0), 0)
+    const totalVolume = 0 // Volume não está disponível em financial_records
     const avgVolume = totalVolume / data.length || 0
 
     // Criar novo documento PDF usando a sintaxe correta do jsPDF 2.x
@@ -200,7 +200,7 @@ async function generateVolumePDF(data, isPreview = false) {
       const rowData = [
         new Date(record.production_date).toLocaleDateString("pt-BR"),
         record.production_time || "",
-        (Number.parseFloat(record.volume_liters) || 0).toFixed(2),
+        '0.00', // Volume não disponível
         record.shift || "",
         record.observations || "",
       ]
@@ -440,9 +440,9 @@ async function generatePaymentsPDF(data, isPreview = false) {
     console.log("- window.reportSettings:", window.reportSettings)
 
     const today = new Date().toLocaleDateString("pt-BR")
-    const totalGross = data.reduce((sum, sale) => sum + (Number.parseFloat(sale.gross_amount) || 0), 0)
-    const totalNet = data.reduce((sum, sale) => sum + (Number.parseFloat(sale.net_amount) || 0), 0)
-    const totalVolume = data.reduce((sum, sale) => sum + (Number.parseFloat(sale.volume_liters) || 0), 0)
+    const totalGross = data.reduce((sum, sale) => sum + (Number.parseFloat(sale.amount) || 0), 0)
+    const totalNet = data.reduce((sum, sale) => sum + (Number.parseFloat(sale.amount) || 0), 0)
+    const totalVolume = 0 // Volume não está disponível em financial_records
 
     // Criar novo documento PDF usando a sintaxe correta do jsPDF 2.x
     const { jsPDF } = window.jspdf
@@ -511,8 +511,8 @@ async function generatePaymentsPDF(data, isPreview = false) {
     // Cabeçalho da tabela
     doc.setFontSize(10)
     doc.setFont("helvetica", "bold")
-    const headers = ["Data", "Volume (L)", "Valor Bruto", "Valor Líquido", "Status"]
-    const colWidths = [30, 25, 30, 30, 25]
+    const headers = ["Data", "Descrição", "Categoria", "Valor", "Status"]
+    const colWidths = [30, 40, 30, 30, 25]
     let xPosition = margin
 
     headers.forEach((header, index) => {
@@ -535,11 +535,11 @@ async function generatePaymentsPDF(data, isPreview = false) {
 
       xPosition = margin
       const rowData = [
-        new Date(record.payment_date || record.created_at).toLocaleDateString("pt-BR"),
-        (Number.parseFloat(record.volume_liters) || 0).toFixed(2),
-        `R$ ${(Number.parseFloat(record.gross_amount) || 0).toFixed(2)}`,
-        `R$ ${(Number.parseFloat(record.net_amount) || 0).toFixed(2)}`,
-        record.status || "Pendente",
+        new Date(record.record_date || record.created_at).toLocaleDateString("pt-BR"),
+        (record.description || 'Receita').substring(0, 20),
+        record.category || 'venda_leite',
+        `R$ ${(Number.parseFloat(record.amount) || 0).toFixed(2)}`,
+        "Realizado",
       ]
 
       rowData.forEach((cell, cellIndex) => {

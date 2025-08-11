@@ -4,8 +4,8 @@
 // =====================================================
 
 // Credenciais do Supabase
-const SUPABASE_URL = 'https://nsmlbgqebwnqmyajczmd.supabase.co';
-const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5zbWxiZ3FlYnducW15YWpjem1kIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQyMjgwMjgsImV4cCI6MjA2OTgwNDAyOH0.gLt4sTWqJ79g6mEtSiJ0xhzYXf_csvvw_E5vO4O-ZPI';
+const SUPABASE_URL = 'https://njnusdzwvxpsxhcspsop.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Im5qbnVzZHp3dnhwc3hoY3Nwc29wIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NTQ4NTY2MjIsImV4cCI6MjA3MDQzMjYyMn0.fmOK6xVEECzQmjTQAUm3Ct0UkNXirabMLlM96wnAQOk';
 
 // Aguardar carregamento da biblioteca Supabase e inicializar cliente
 let supabase;
@@ -83,9 +83,6 @@ async function registerUserAndFarm(farmData, adminData) {
                 p_city: farmData.city,
                 p_state: farmData.state,
                 p_cnpj: farmData.cnpj || '',
-                p_animal_count: farmData.animal_count || 0,
-                p_daily_production: farmData.daily_production || 0,
-                p_total_area_hectares: farmData.total_area_hectares || null,
                 p_phone: farmData.phone || '',
                 p_email: farmData.email || '',
                 p_address: farmData.address || ''
